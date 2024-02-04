@@ -1,0 +1,12 @@
+[submodule "third_party/jackal_calib"]
+	path = third_party/jackal_calib
+	url = git@github.com:sadanand1120/jackal_calib.git
+[submodule "third_party/pips"]
+	path = third_party/pips
+	url = git@github.com:ut-amrl/pips.git
+[submodule "third_party/visprog"]
+	path = third_party/visprog
+	url = git@github.com:allenai/visprog.git
+[submodule "third_party/Grounded-Segment-Anything"]
+	path = third_party/Grounded-Segment-Anything
+	url = git@github.com:IDEA-Research/Grounded-Segment-Anything.git
