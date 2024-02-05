@@ -166,3 +166,4 @@ cython_debug/
 **/__pycache__
 **/notrack*/
 **/notrack*
+**/*evals_data*

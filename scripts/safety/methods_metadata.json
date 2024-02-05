@@ -1,0 +1,56 @@
+{
+    "1": {
+        "name": "ns-hitl",
+        "type": "ns"
+    },
+    "2": {
+        "name": "ns-single-shot",
+        "type": "ns"
+    },
+    "3": {
+        "name": "ns-code-as-policies",
+        "type": "ns"
+    },
+    "4": {
+        "name": "nn-segformer-b0",
+        "model-hfmi": "sam1120/safety-utcustom-nn-segformer-b0",
+        "type": "nn"
+    },
+    "5": {
+        "name": "nn-segformer-b5",
+        "model-hfmi": "sam1120/safety-utcustom-nn-segformer-b5",
+        "type": "nn"
+    },
+    "6": {
+        "name": "nn-depth-segformer-b0",
+        "model-hfmi": "sam1120/safety-utcustom-nn-depth-segformer-b0",
+        "type": "nn"
+    },
+    "7": {
+        "name": "nn-depth-segformer-b5",
+        "model-hfmi": "sam1120/safety-utcustom-nn-depth-segformer-b5",
+        "type": "nn"
+    },
+    "8": {
+        "name": "gpt4v",
+        "preprompt-filename": "vlm.md",
+        "type": "vlm"
+    },
+    "9": {
+        "name": "gpt4v-prompted",
+        "preprompt-filename": "vlm_prompted.md",
+        "type": "vlm"
+    },
+    "10": {
+        "name": "visprog",
+        "type": "vlm"
+    },
+    "11": {
+        "name": "visprog-prompted",
+        "type": "vlm"
+    },
+    "12": {
+        "name": "ns-single-shot-helped",
+        "type": "ns"
+    }
+}
