@@ -252,10 +252,13 @@ if __name__ == "__main__":
                          method_num=args.method_num)
     elif methods_metadata[str(args.method_num)]["type"] == "ns":
         # ns setup
-        filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/seqn_filled_lfps_sketches.json"))[str(args.ns_sketch_num)]
         hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
+            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/seqn_filled_lfps_sketches.json"))[str(args.ns_sketch_num)]
+            fi = FasterImageInference(DOMAIN)
+        elif methods_metadata[str(args.method_num)]["name"] == "ns-direct":
+            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_direct/seqn_filled_lfps_sketches.json"))["29"]
             fi = FasterImageInference(DOMAIN)
         terrain = fi._terrain
         in_the_way = fi._in_the_way

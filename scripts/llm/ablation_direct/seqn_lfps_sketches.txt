@@ -1,0 +1,127 @@
+Example 1
+TODO: Manually convert PS to LFPS!
+
+Example 2
+TODO: Manually convert PS to LFPS!
+
+Example 3
+TODO: Manually convert PS to LFPS!
+
+Example 4
+TODO: Manually convert PS to LFPS!
+
+Example 5
+TODO: Manually convert PS to LFPS!
+
+Example 6
+TODO: Manually convert PS to LFPS!
+
+Example 7
+TODO: Manually convert PS to LFPS!
+
+Example 8
+TODO: Manually convert PS to LFPS!
+
+Example 9
+TODO: Manually convert PS to LFPS!
+
+Example 10
+TODO: Manually convert PS to LFPS!
+
+Example 11
+TODO: Manually convert PS to LFPS!
+
+Example 12
+TODO: Manually convert PS to LFPS!
+
+Example 13
+TODO: Manually convert PS to LFPS!
+
+Example 14
+TODO: Manually convert PS to LFPS!
+
+Example 15
+TODO: Manually convert PS to LFPS!
+
+Example 16
+TODO: Manually convert PS to LFPS!
+
+Example 17
+TODO: Manually convert PS to LFPS!
+
+Example 18
+TODO: Manually convert PS to LFPS!
+
+Example 19
+TODO: Manually convert PS to LFPS!
+
+Example 20
+TODO: Manually convert PS to LFPS!
+
+Example 21
+TODO: Manually convert PS to LFPS!
+
+Example 22
+TODO: Manually convert PS to LFPS!
+
+Example 23
+TODO: Manually convert PS to LFPS!
+
+Example 24
+TODO: Manually convert PS to LFPS!
+
+Example 25
+TODO: Manually convert PS to LFPS!
+
+Example 26
+TODO: Manually convert PS to LFPS!
+
+Example 27
+TODO: Manually convert PS to LFPS!
+
+Example 28
+TODO: Manually convert PS to LFPS!
+
+Example 29
+def is_safe(pixel_loc):
+    if terrain(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) > ?? and distance_to_bush(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_person(pixel_loc) > ?? and distance_to_pole(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_pole(pixel_loc) > ?? and distance_to_person(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) > ?? and distance_to_pole(pixel_loc) > ?? and distance_to_barricade(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_tree(pixel_loc) > ?? and distance_to_pole > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_board(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and distance_to_car(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 2 and terrain(pixel_loc) == 4 and distance_to_board(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and distance_to_car(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) > ?? and frontal_distance_staircase(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and distance_to_person(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 3 and distance_to_wall(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) > ?? and distance_to_car(pixel_loc) > ??:
+        return True
+    elif terrain(pixel_loc) == 0 and frontal_distance_staircase(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) < ??:
+        return False
+    elif terrain(pixel_loc) == 0 and slope(pixel_loc) < ??:
+        return True
+    return False

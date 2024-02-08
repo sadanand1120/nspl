@@ -42,9 +42,10 @@ def txt_to_json(file_path):
 
 
 class HITLllm:
-    def __init__(self, human_nl_demo, state_path, is_first_demo=False):
+    def __init__(self, human_nl_demo, state_path, preprompts_dirpath=os.path.join(nspl_root_dir, "scripts/llm/preprompts"), is_first_demo=False):
         self.human_nl_demo = human_nl_demo
         self.state_path = state_path
+        self.preprompts_dirpath = preprompts_dirpath
         self.is_first_demo = is_first_demo
         if self.is_first_demo:
             self.initialize_state()
@@ -69,7 +70,7 @@ class HITLllm:
         json_writer(self.state_path, state)
 
     def read_all_preprompts(self):
-        preprompts_dir = os.path.join(nspl_root_dir, "scripts/llm/preprompts")
+        preprompts_dir = self.preprompts_dirpath
         for filename in os.listdir(preprompts_dir):
             if filename.endswith(".md"):
                 key = filename[:-3]  # Remove the file extension to use as the dictionary key
@@ -418,7 +419,7 @@ if __name__ == "__main__":
         if not all_yes:
             user_input = input(green("Do you want to continue? (y/n/all)\n", 'bold'))
             if user_input == "n":
-                break
+                exit()
             if user_input == "all":
                 all_yes = True
 
