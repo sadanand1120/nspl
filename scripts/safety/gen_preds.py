@@ -264,6 +264,9 @@ if __name__ == "__main__":
         elif methods_metadata[str(args.method_num)]["name"] == "ns-direct":
             filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_direct/seqn_filled_lfps_sketches.json"))["29"]
             fi = FasterImageInference(DOMAIN)
+        elif methods_metadata[str(args.method_num)]["name"] == "ns-directplus":
+            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_directplus/seqn_filled_lfps_sketches.json"))["29"]
+            fi = FasterImageInference(DOMAIN)
         terrain = fi._terrain
         in_the_way = fi._in_the_way
         slope = fi._slope

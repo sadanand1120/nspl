@@ -8,7 +8,7 @@
         "type": "ns"
     },
     "12": {
-        "name": "ns-direct-plus",
+        "name": "ns-directplus",
         "type": "ns"
     },
     "3": {
@@ -62,5 +62,25 @@
     "11": {
         "name": "visprog-prompted",
         "type": "vlm"
-    }
+    },
+    "34": {
+        "name": "nn30-segformer-b0",
+        "model-hfmi": "sam1120/safety-utcustom-train-SF30-RGB-b0",
+        "type": "nn"
+    },
+    "35": {
+        "name": "nn30-segformer-b5",
+        "model-hfmi": "sam1120/safety-utcustom-train-SF30-RGB-b5",
+        "type": "nn"
+    },
+    "36": {
+        "name": "nn30-depth-segformer-b0",
+        "model-hfmi": "sam1120/safety-utcustom-train-SF30-RGBD-b0",
+        "type": "nn"
+    },
+    "37": {
+        "name": "nn30-depth-segformer-b5",
+        "model-hfmi": "sam1120/safety-utcustom-train-SF30-RGBD-b5",
+        "type": "nn"
+    },
 }
