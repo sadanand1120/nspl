@@ -111,7 +111,11 @@ def ns_save_pred(hfdi, root_dir, method_num, ldips_infer_ns_obj: FasterImageInfe
             print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Processing row: {k}/{cv2_img.shape[0]}")
             for j in range(cv2_img.shape[1]):
                 print(f"Processing column: {j}/{cv2_img.shape[1]}", end='\r')
-                is_safe_mask[k, j] = is_safe((j, k))
+                try:
+                    is_safe_mask[k, j] = is_safe((j, k))
+                except:
+                    print(red(f"\nError in processing pixel: {j}/{cv2_img.shape[1]}\n", "bold"))
+                    is_safe_mask[k, j] = False
             print("\033[F\033[K", end="")  # Move up and clear the line
 
         is_safe_mask[is_safe_mask == 0] = 2

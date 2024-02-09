@@ -88,6 +88,8 @@ def is_safe(pixel_loc):
         return True
     elif terrain(pixel_loc) == 1 and frontal_distance_entrance(pixel_loc) > ??:
         return True
+    elif terrain(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) > ??:
+        return True
     elif terrain(pixel_loc) == 0 and distance_to_person(pixel_loc) > ?? and distance_to_pole(pixel_loc) > ??:
         return True
     elif terrain(pixel_loc) == 0 and distance_to_bush(pixel_loc) > ??:
