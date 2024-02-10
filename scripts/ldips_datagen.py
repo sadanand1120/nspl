@@ -208,7 +208,7 @@ class LDIPSdatagenSingleEx:
         "wall": (0.5, 0.5, 0.4)
     }
 
-    def __init__(self, examples_root_path: str, example_num: int, hitl_llm_state_path: str, example_label: str, nl_feedback: str, MODELS: dict, kDebug=False, do_only: Optional[str] = None):
+    def __init__(self, examples_root_path: str, example_num: int, hitl_llm_state_path: str, example_label: str, nl_feedback: str, MODELS: dict, kDebug=False, do_only: Optional[str] = None, data_table_dirname: str = "SSR"):
         self.examples_root_path = examples_root_path
         self.example_num = example_num
         self.hitl_llm_state_path = hitl_llm_state_path
@@ -218,7 +218,7 @@ class LDIPSdatagenSingleEx:
         self.do_only = do_only
         self.MODELS = MODELS
         self.data_rootpath = os.path.join(self.examples_root_path, "syncdata", str(self.example_num))
-        self.data_table_path = os.path.join(self.examples_root_path, "SSR")
+        self.data_table_path = os.path.join(self.examples_root_path, data_table_dirname)
         os.makedirs(self.data_table_path, exist_ok=True)
         self.jsonf = {}  # final json to be written to the data table
         self.images_bgr = []
@@ -256,7 +256,7 @@ class LDIPSdatagenSingleEx:
 
             # parsing ldips sketch to get features needed to be computed
             self.jsonf["ldips_features"] = {}
-            all_pred_names = self.extract_ldips_state_vars(hitl_llm_state["ldips_program_sketch"])
+            all_pred_names = self.extract_ldips_state_vars(hitl_llm_state["ldips_func_program_sketch"])
             if "terrain" in all_pred_names:
                 self.jsonf["ldips_features"]["terrain"] = self.get_terrain(hitl_llm_state["domain"]["terrains"])
             if "in_the_way" in all_pred_names:

@@ -1,0 +1,64 @@
+{
+    "hitl_llm_state": {
+        "domain": {
+            "objects": [
+                "barricade",
+                "board",
+                "bush",
+                "car",
+                "entrance",
+                "person",
+                "pole",
+                "staircase",
+                "tree",
+                "wall"
+            ],
+            "terrains": [
+                "bricks",
+                "grass",
+                "road",
+                "sidewalk",
+                "speedway",
+                "tiles"
+            ]
+        },
+        "program_sketch": "def is_safe(pixel_loc):\n    if is_on(pixel_loc, 'sidewalk'):\n        if is_far_away_from(pixel_loc, 'person', ??) and is_far_away_from(pixel_loc, 'pole', ??) and not is_in_the_way(pixel_loc) and not is_in_front_of(pixel_loc, 'entrance', ??) and is_far_away_from(pixel_loc, 'bush', ??) and is_far_away_from(pixel_loc, 'barricade') and is_far_away_from(pixel_loc, 'tree') and is_far_away_from(pixel_loc, 'board') and not is_in_front_of(pixel_loc, 'staircase') and is_far_away_from(pixel_loc, 'car') and not is_inclined(pixel_loc, ??):\n            return True\n    elif is_on(pixel_loc, 'tiles'):\n        if not is_in_front_of(pixel_loc, 'entrance') and is_far_away_from(pixel_loc, 'wall'):\n            return True\n    return False",
+        "ldips_func_program_sketch": "def is_safe(pixel_loc):\n    if terrain(pixel_loc) == 0:\n        if distance_to_person(pixel_loc) > ?? and distance_to_pole(pixel_loc) > ?? and in_the_way(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) > ?? and distance_to_bush(pixel_loc) > ?? and distance_to_barricade(pixel_loc) > ?? and distance_to_tree(pixel_loc) > ?? and distance_to_board(pixel_loc) > ?? and frontal_distance_staircase(pixel_loc) > ?? and distance_to_car(pixel_loc) > ?? and slope(pixel_loc) < ??:\n            return True\n    elif terrain(pixel_loc) == 3:\n        if frontal_distance_entrance(pixel_loc) > ?? and distance_to_wall(pixel_loc) > ??:\n            return True\n    return False",
+        "predicate_library": {
+            "docstrings": {
+                "is_far_away_from(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "Returns True if the pixel location is far enough, according to the parameter, from the nearest object of the object_class",
+                "is_on(pixel_loc: Tuple[int, int], terrain_class: str) -> bool": "Returns True if the terrain at the pixel location matches the terrain_class",
+                "is_in_the_way(pixel_loc: Tuple[int, int]) -> bool": "Returns True if all the four points 1 m away from the pixel location along the x, y axes in the global map frame are traversable, else False",
+                "is_in_front_of(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "Returns True if the pixel location falls on the extended (parametrized) object in the map frame",
+                "is_close_to(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "Returns True if the pixel location is not far from, according to the parameter, the nearest object of the object_class",
+                "is_inclined(pixel_loc: Tuple[int, int], alpha: float) -> bool": "Returns True if the elevation gradient at the pixel location is more than the threshold alpha"
+            },
+            "codestrings": {
+                "is_far_away_from(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "def is_far_away_from(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool:\n    \"\"\"Returns True if the pixel location is far enough, according to the parameter, from the nearest object of the object_class\"\"\"\n    loc = project_pixel_to_map(pixel_loc)\n    distance = distance_to_nearest_object(loc, object_class)\n    return distance > alpha",
+                "is_on(pixel_loc: Tuple[int, int], terrain_class: str) -> bool": "def is_on(pixel_loc: Tuple[int, int], terrain_class: str) -> bool:\n    \"\"\"Returns True if the terrain at the pixel location matches the terrain_class\"\"\"\n    return terrain_at(pixel_loc) == terrain_class",
+                "is_in_the_way(pixel_loc: Tuple[int, int]) -> bool": "def is_in_the_way(pixel_loc: Tuple[int, int]) -> bool:\n    \"\"\"Returns True if all the four points 1 m away from the pixel location along the x, y axes in the global map frame are traversable, else False\"\"\"\n    loc = project_pixel_to_map(pixel_loc)\n    points = [(loc[0] + 1, loc[1]), (loc[0] - 1, loc[1]), (loc[0], loc[1] + 1), (loc[0], loc[1] - 1)]\n    for point in points:\n        pixel_point = project_map_to_pixel(point)\n        if pixel_point is None or not is_traversable(terrain_at(pixel_point)):\n            return False\n    return True",
+                "is_in_front_of(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "def is_in_front_of(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool:\n    \"\"\"Returns True if the pixel location falls on the extended (parametrized) object in the map frame\"\"\"\n    loc = project_pixel_to_map(pixel_loc)\n    extend(object_class, alpha)\n    return distance_to_nearest_object(loc, object_class) == 0",
+                "is_close_to(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool": "def is_close_to(pixel_loc: Tuple[int, int], object_class: str, alpha: float) -> bool:\n    \"\"\"Returns True if the pixel location is not far from, according to the parameter, the nearest object of the object_class\"\"\"\n    loc = project_pixel_to_map(pixel_loc)\n    distance = distance_to_nearest_object(loc, object_class)\n    return distance <= alpha",
+                "is_inclined(pixel_loc: Tuple[int, int], alpha: float) -> bool": "def is_inclined(pixel_loc: Tuple[int, int], alpha: float) -> bool:\n    \"\"\"Returns True if the elevation gradient at the pixel location is more than the threshold alpha\"\"\"\n    loc = project_pixel_to_map(pixel_loc)\n    return slope_at(loc) > alpha"
+            }
+        }
+    },
+    "ldips_synth_program_sketch": "def is_safe(pixel_loc):\n    if terrain == 0:\n        if distance_to_person > pX001 and distance_to_pole > pX002 and in_the_way == 0 and frontal_distance_entrance > pX003 and distance_to_bush > pX004 and distance_to_barricade > pX005 and distance_to_tree > pX006 and distance_to_board > pX007 and frontal_distance_staircase > pX008 and distance_to_car > pX009 and slope < pX010:\n            return True\n    elif terrain == 3:\n        if frontal_distance_entrance > pX011 and distance_to_wall > pX012:\n            return True\n    return False",
+    "label": "SAFE",
+    "human_nl": "It is safe since it is on a sidewalk, and is far from any person and the pole. It is not on grass.",
+    "ldips_features": {
+        "terrain": 0,
+        "in_the_way": 0,
+        "slope": 0.7780666351318359,
+        "distance_to_barricade": 1111.0,
+        "distance_to_board": 1111.0,
+        "distance_to_bush": 2.129371612084703,
+        "distance_to_car": 8.991980728024528,
+        "distance_to_person": 4.518702702533652,
+        "distance_to_pole": 0.9788558256517129,
+        "distance_to_tree": 2.129371612084703,
+        "distance_to_wall": 1111.0,
+        "frontal_distance_entrance": 1111.0,
+        "frontal_distance_staircase": 1111.0
+    }
+}

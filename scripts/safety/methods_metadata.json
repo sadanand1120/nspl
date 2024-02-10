@@ -82,5 +82,9 @@
         "name": "nn30-depth-segformer-b5",
         "model-hfmi": "sam1120/safety-utcustom-train-SF30-RGBD-b5",
         "type": "nn"
+    },
+    "41": {
+        "name": "ns-notraj",
+        "type": "ns"
     }
 }
