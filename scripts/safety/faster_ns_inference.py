@@ -174,6 +174,33 @@ class FasterImageInference:
         return ret_out
 
 
+class FasterImageInferenceCaP(FasterImageInference):
+    def __init__(self, domain):
+        super().__init__(domain)
+
+    def frontal_distance_to_obj(self, img_bgr, pc_xyz, obj_name):
+        fullpath = os.path.join(self.fi_data_dir, f"cap_{self.noext_name}_frontal_distance_to_{obj_name}.bin")
+        if os.path.exists(fullpath):
+            return np.fromfile(fullpath, dtype=np.float32).reshape((img_bgr.shape[0], img_bgr.shape[1]))
+        ret_out = self.distance_to_obj(img_bgr, pc_xyz, obj_name)
+        flat_ret_out = ret_out.reshape(-1).astype(np.float32)
+        flat_ret_out.tofile(fullpath)
+        return ret_out
+
+    def in_the_way(self, img_bgr, pc_xyz):
+        fullpath = os.path.join(self.fi_data_dir, f"cap_{self.noext_name}_in_the_way.bin")
+        if os.path.exists(fullpath):
+            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
+        ret_out_terrain = self.terrain(img_bgr, pc_xyz)
+        traversable_indices = [NSLABELS_TWOWAY_NSINT[label] for label in NSLABELS_TRAVERSABLE_TERRAINS]
+        traversable_mask = np.isin(ret_out_terrain, traversable_indices)
+        not_terrain_or_not_traversable_mask = ~traversable_mask
+        ret_out = not_terrain_or_not_traversable_mask.reshape((img_bgr.shape[0], img_bgr.shape[1]))
+        flat_ret_out = ret_out.reshape(-1).astype(np.uint8)
+        flat_ret_out.tofile(fullpath)
+        return ret_out
+
+
 if __name__ == "__main__":
     hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
 

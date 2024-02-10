@@ -7,7 +7,7 @@ from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import reader, json_reader
 import cv2
 from PIL import Image
-from safety.faster_ns_inference import FasterImageInference
+from safety.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
 from safety._visprog_inference import infer_visprog
 from llm._vlm import get_vlm_response
 from segments import SegmentsClient
@@ -267,6 +267,9 @@ if __name__ == "__main__":
         elif methods_metadata[str(args.method_num)]["name"] == "ns-directplus":
             filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_directplus/seqn_filled_lfps_sketches.json"))["29"]
             fi = FasterImageInference(DOMAIN)
+        elif methods_metadata[str(args.method_num)]["name"] == "ns-code-as-policies":
+            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_cap/seqn_filled_lfps_sketches.json"))["29"]
+            fi = FasterImageInferenceCaP(DOMAIN)
         terrain = fi._terrain
         in_the_way = fi._in_the_way
         slope = fi._slope

@@ -51,6 +51,7 @@ DATASETLABELS_TO_NSLABELS = {
     "REST": "rest",
 }
 
+# Following defs in terms of NSLABELS
 # IS_A_TERRAIN => simply means not NAT
 # TRAVESABLE_TERRAINS => means is a terrain + is traversable for agent (i.e., like not grass)
 # NON_TRAVERSABLE_TERRAINS => means is a terrain + is not traversable for agent (i.e., like grass)
