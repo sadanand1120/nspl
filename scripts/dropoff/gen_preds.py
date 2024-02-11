@@ -229,27 +229,30 @@ if __name__ == "__main__":
     methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/dropoff/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_di", type=str, default="sam1120/dropoff-utcustom-EVAL")
+    parser.add_argument("--eval_hfdi", type=str, default="sam1120/dropoff-utcustom-EVAL")
+    parser.add_argument("--eval_sdi", type=str, default="smodak/pickup-utcustom-eval", help="Segments.ai dataset identifier, needed only for gpt4v")
     parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--step_size", type=int, default=1)
     args = parser.parse_args()
 
+    print(green(f"*************** Saving predictions for {args.root_dirname} and method {args.method_num}... ***************", "bold"))
+
     eval_root_dir = os.path.join(root_dir, args.root_dirname)
     if not os.path.exists(os.path.join(eval_root_dir, "gt_preds")):
         print(f"Saving ground truth labels for {args.root_dirname}...")
-        gt_save(hfdi=args.eval_di,
+        gt_save(hfdi=args.eval_hfdi,
                 root_dir=eval_root_dir)
 
     if methods_metadata[str(args.method_num)]["type"] == "nn":
         if "depth" in methods_metadata[str(args.method_num)]["name"]:
-            nn_depth_save_pred(hfdi=args.eval_di,
+            nn_depth_save_pred(hfdi=args.eval_hfdi,
                                hfmi=methods_metadata[str(args.method_num)]["model-hfmi"],
                                root_dir=eval_root_dir,
                                method_num=args.method_num)
         else:
-            nn_save_pred(hfdi=args.eval_di,
+            nn_save_pred(hfdi=args.eval_hfdi,
                          hfmi=methods_metadata[str(args.method_num)]["model-hfmi"],
                          root_dir=eval_root_dir,
                          method_num=args.method_num)
@@ -268,7 +271,7 @@ if __name__ == "__main__":
         for method_name in ['frontal_distance_' + obj for obj in DOMAIN["objects"]]:
             globals()[method_name] = bind_method(fi, f"_{method_name}")
         exec(filled_lfps_sketch)
-        ns_save_pred(hfdi=args.eval_di,
+        ns_save_pred(hfdi=args.eval_hfdi,
                      root_dir=eval_root_dir,
                      method_num=args.method_num,
                      ldips_infer_ns_obj=fi,
@@ -277,12 +280,12 @@ if __name__ == "__main__":
     elif methods_metadata[str(args.method_num)]["type"] == "vlm":
         if "gpt4v" in methods_metadata[str(args.method_num)]["name"]:
             pre_prompt = reader(os.path.join(nspl_root_dir, f"scripts/llm/preprompts/{methods_metadata[str(args.method_num)]['preprompt-filename']}"))
-            gpt4v_save_pred(sdi=args.eval_di,
+            gpt4v_save_pred(sdi=args.eval_sdi,
                             root_dir=eval_root_dir,
                             method_num=args.method_num,
                             pre_prompt=pre_prompt)
         elif "visprog" in methods_metadata[str(args.method_num)]["name"]:
-            visprog_save_pred(hfdi=args.eval_di,
+            visprog_save_pred(hfdi=args.eval_hfdi,
                               root_dir=eval_root_dir,
                               method_num=args.method_num,
                               prompted="prompted" in methods_metadata[str(args.method_num)]["name"])
