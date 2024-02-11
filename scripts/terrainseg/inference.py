@@ -12,7 +12,7 @@ import os
 import numpy as np
 from PIL import Image
 from terrainseg.training.train import prepare_dataset
-from safety.dutils import remove_username
+from dropoff.dutils import remove_username
 from terrainseg.ALL_TERRAINS_MAPS import DATASETINTstr_TO_DATASETLABELS
 
 

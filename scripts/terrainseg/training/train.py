@@ -20,7 +20,7 @@ from git import Repo
 from torch.nn import CrossEntropyLoss
 import numpy as np
 from easydict import EasyDict
-from safety.dutils import remove_username
+from dropoff.dutils import remove_username
 from PIL import Image
 from copy import deepcopy
 from simple_colors import red

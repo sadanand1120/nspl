@@ -7,8 +7,8 @@ from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import reader, json_reader, writer, json_writer
 import cv2
 from PIL import Image
-from safety.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
-from safety._visprog_inference import infer_visprog
+from dropoff.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
+from dropoff._visprog_inference import infer_visprog
 from llm._vlm import get_vlm_response
 from segments import SegmentsClient
 import re

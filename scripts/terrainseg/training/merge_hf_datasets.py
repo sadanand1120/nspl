@@ -1,7 +1,7 @@
 from datasets import load_dataset, concatenate_datasets
 from datasets import DatasetDict
 import os
-from safety.dutils import remove_username
+from dropoff.dutils import remove_username
 
 HF_USERNAME = "sam1120"
 HF_DATASETS_NAMES = [

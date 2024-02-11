@@ -6,7 +6,7 @@ import cv2
 from terrainseg.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
 from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import json_reader
-from safety.ldips_inference import NSInferObjDet, NSInferTerrainSeg
+from dropoff.ldips_inference import NSInferObjDet, NSInferTerrainSeg
 
 
 class FasterImageInference:

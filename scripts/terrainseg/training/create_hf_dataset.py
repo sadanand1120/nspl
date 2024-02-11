@@ -3,7 +3,7 @@ from terrainseg.training.custom_release2dataset import my_release2dataset
 from segments.utils import get_semantic_bitmap
 import argparse
 import os
-from safety.dutils import remove_username
+from dropoff.dutils import remove_username
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-d', '--segments_dataset_name',
