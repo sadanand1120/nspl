@@ -18,8 +18,8 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
     exclude_idx_dict = {}
     id2label = {
         0: "unlabeled",
-        1: "safe",
-        2: "unsafe",
+        1: "dropoff",
+        2: "undropoff",
     }
     gt_root_dir = os.path.join(root_dir, "gt_preds")
     pred_root_dir = os.path.join(root_dir, f"methods_preds/{method_num}")
@@ -30,12 +30,10 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
     for gt_bin_path in all_gt_bins_paths:
         pc_np = np.fromfile(gt_bin_path, dtype=np.uint8).reshape((H, W))
         all_gt_bins.append(pc_np)
-    # full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, H, W))
 
     for pred_bin_path in all_pred_bins_paths:
         pc_np = np.fromfile(pred_bin_path, dtype=np.uint8).reshape((H, W))
         all_pred_bins.append(pc_np)
-    # full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, H, W))
 
     _metric = evaluate.load("mean_iou")
     for i in range(len(all_gt_bins)):
@@ -55,8 +53,8 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
         metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
         iou_dict = {}
         iou_dict["mIOU"] = metrics["mean_iou"]
-        iou_dict["IOU_safe"] = metrics["iou_safe"]
-        iou_dict["IOU_unsafe"] = metrics["iou_unsafe"]
+        iou_dict["IOU_dropoff"] = metrics["iou_dropoff"]
+        iou_dict["IOU_undropoff"] = metrics["iou_undropoff"]
         pprint(iou_dict)
         print("-------------------------------------------------------------------")
         if iou_dict["mIOU"] < 0.8:
@@ -73,7 +71,7 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
             # mydir = "/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/evals_data_safety/utcustom/ns_viz_dir/train"
             # cv2.imwrite(os.path.join(mydir, f"{noext_name}.png"), side_by_side)
     pprint(exclude_idx_dict)
-    sorted_exclude_idx_list = sorted(exclude_idx_dict, key=lambda x: exclude_idx_dict[x]["IOU_safe"])
+    sorted_exclude_idx_list = sorted(exclude_idx_dict, key=lambda x: exclude_idx_dict[x]["IOU_dropoff"])
     print(sorted_exclude_idx_list)
 
 
@@ -85,8 +83,8 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
         root_dirnames = [root_dirnames]
     id2label = {
         0: "unlabeled",
-        1: "safe",
-        2: "unsafe",
+        1: "dropoff",
+        2: "undropoff",
     }
     all_gt_bins = []
     all_pred_bins = []
@@ -127,18 +125,18 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
     iou_dict = {}
     iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
-    iou_dict["IOU_safe"] = round(metrics["iou_safe"] * 100, 2)
-    iou_dict["IOU_unsafe"] = round(metrics["iou_unsafe"] * 100, 2)
+    iou_dict["IOU_dropoff"] = round(metrics["iou_dropoff"] * 100, 2)
+    iou_dict["IOU_undropoff"] = round(metrics["iou_undropoff"] * 100, 2)
     return iou_dict
 
 
 if __name__ == "__main__":
     _H = 540
     _W = 960
-    root_dir = os.path.join(nspl_root_dir, "evals_data_safety/utcustom")
+    root_dir = os.path.join(nspl_root_dir, "evals_data_dropoff/utcustom")
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--root_dirname", type=str, default="train/utcustom")  # either eval or train+test, could be many separated by commas
+    parser.add_argument("--root_dirname", type=str, default="train")  # either eval/train/test, could be many separated by commas
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument("--do_exclude", action="store_true")
     args = parser.parse_args()
@@ -146,16 +144,3 @@ if __name__ == "__main__":
     iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
     print(f"Evaluation results for method {args.method_num}:")
     pprint(iou_dict)
-
-    # eval_root_dir = os.path.join(root_dir, "test")
-    # iou_viz_individual(eval_root_dir, 1, H=_H, W=_W)
-
-    # gt_bin = np.fromfile("/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/evals_data_safety/utcustom/test/gt_preds/000002_morning_mode1_11062023_000464.bin", dtype=np.uint8).reshape((540, 960))
-    # pred_bin = np.fromfile("/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/evals_data_safety/utcustom/test/methods_preds/1/000002_morning_mode1_11062023_000464.bin", dtype=np.uint8).reshape((540, 960))
-    # cv2_img = cv2.imread("/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/evals_data_safety/utcustom/test/images/000002_morning_mode1_11062023_000464.png")
-    # gt_overlay = TerrainSegFormer.get_seg_overlay(cv2_img, gt_bin, alpha=0.24)
-    # pred_overlay = TerrainSegFormer.get_seg_overlay(cv2_img, pred_bin, alpha=0.24)
-    # side_by_side = np.concatenate([gt_overlay, pred_overlay], axis=1)
-    # cv2.imshow("side_by_side", side_by_side)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()

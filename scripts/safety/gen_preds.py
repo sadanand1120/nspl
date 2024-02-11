@@ -4,7 +4,7 @@ import argparse
 from datasets import load_dataset
 import numpy as np
 from terrainseg.inference import TerrainSegFormer
-from utilities.std_utils import reader, json_reader
+from utilities.std_utils import reader, json_reader, writer, json_writer
 import cv2
 from PIL import Image
 from safety.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
@@ -112,7 +112,7 @@ def ns_save_pred(hfdi, root_dir, method_num, ldips_infer_ns_obj: FasterImageInfe
             for j in range(cv2_img.shape[1]):
                 print(f"Processing column: {j}/{cv2_img.shape[1]}", end='\r')
                 try:
-                    is_safe_mask[k, j] = is_safe((j, k))
+                    is_safe_mask[k, j] = is_dropoff((j, k))
                 except:
                     print(red(f"\nError in processing pixel: {j}/{cv2_img.shape[1]}\n", "bold"))
                     is_safe_mask[k, j] = False
@@ -157,9 +157,9 @@ def visprog_save_pred(hfdi, root_dir, method_num, prompted=False):
     s.prepare_dataset()
     eval_ds = s.ds
     if prompted:
-        prompt = "Safe location = sidewalk or concrete, and far away from objects. Replace safe location with snow."
+        prompt = "Dropoff location = sidewalk or concrete, and far away from objects. Replace dropoff location with snow."
     else:
-        prompt = "Replace safe location for a robot to pull over to with snow."
+        prompt = "Replace a good dropoff location for a taxi to pull over to with snow."
     for i in range(len(eval_ds)):
         print(green(f"Processing {i+1}/{len(eval_ds)}", "bold"))
         pil_img = eval_ds[i]['pixel_values']
@@ -224,15 +224,14 @@ def gt_save(hfdi, root_dir):
 
 
 if __name__ == "__main__":
-    root_dir = os.path.join(nspl_root_dir, "evals_data_safety/utcustom")
+    root_dir = os.path.join(nspl_root_dir, "evals_data_dropoff/utcustom")
 
     methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/safety/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_di", type=str, default="sam1120/safety-utcustom-EVAL")
+    parser.add_argument("--eval_di", type=str, default="sam1120/dropoff-utcustom-EVAL")
     parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
-    parser.add_argument("--ns_sketch_num", type=int, default=29)
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--step_size", type=int, default=1)
     args = parser.parse_args()
@@ -259,20 +258,7 @@ if __name__ == "__main__":
         hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
-            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/seqn_filled_lfps_sketches.json"))[str(args.ns_sketch_num)]
-            fi = FasterImageInference(DOMAIN)
-        # ablations
-        elif methods_metadata[str(args.method_num)]["name"] == "ns-direct":
-            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_direct/seqn_filled_lfps_sketches.json"))["29"]
-            fi = FasterImageInference(DOMAIN)
-        elif methods_metadata[str(args.method_num)]["name"] == "ns-directplus":
-            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_directplus/seqn_filled_lfps_sketches.json"))["29"]
-            fi = FasterImageInference(DOMAIN)
-        elif methods_metadata[str(args.method_num)]["name"] == "ns-code-as-policies":
-            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_cap/seqn_filled_lfps_sketches.json"))["29"]
-            fi = FasterImageInferenceCaP(DOMAIN)
-        elif methods_metadata[str(args.method_num)]["name"] == "ns-notraj":
-            filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_notraj/seqn_filled_lfps_sketches.json"))["29"]
+            filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/safety/synthesized_sketch.txt")).strip()
             fi = FasterImageInference(DOMAIN)
         terrain = fi._terrain
         in_the_way = fi._in_the_way

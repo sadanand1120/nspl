@@ -1,0 +1,24 @@
+{
+    "domain": {
+        "objects": [
+            "barricade",
+            "board",
+            "bush",
+            "car",
+            "entrance",
+            "person",
+            "pole",
+            "staircase",
+            "tree",
+            "wall"
+        ],
+        "terrains": [
+            "bricks",
+            "grass",
+            "road",
+            "sidewalk",
+            "speedway",
+            "tiles"
+        ]
+    }
+}

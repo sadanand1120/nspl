@@ -199,17 +199,3 @@ class FasterImageInferenceCaP(FasterImageInference):
         flat_ret_out = ret_out.reshape(-1).astype(np.uint8)
         flat_ret_out.tofile(fullpath)
         return ret_out
-
-
-if __name__ == "__main__":
-    hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
-
-    CUR_IMG_BGR = cv2.imread(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/train/utcustom/images/000102_morning_random_3_11042023_000200.png"))
-    CUR_PC_XYZ = np.fromfile(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/train/utcustom/pcs/000102_morning_random_3_11042023_000200.bin"), dtype=np.float32).reshape((-1, 4))[:, :3]
-    DOMAIN = hitl_llm_state["domain"]
-    fi = FasterImageInference(DOMAIN)
-    res = fi.exec_program(CUR_IMG_BGR, CUR_PC_XYZ).astype(np.uint8)
-    overlay = TerrainSegFormer.get_seg_overlay(CUR_IMG_BGR, res, alpha=0.24)
-    cv2.imshow("overlay", overlay)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
