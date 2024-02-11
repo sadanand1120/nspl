@@ -148,6 +148,32 @@ def nn_save_pred(hfdi, hfmi, root_dir, method_num):
         flat_nn_seg_np.tofile(os.path.join(pred_root_dir, f"{noext_img_name}.bin"))
 
 
+def nn_depth_save_pred(hfdi, hfmi, root_dir, method_num):
+    """
+    Given the huggingface dataset identifier and model identifier, runs inference on the dataset and saves the predictions as bins
+    """
+    pred_root_dir = os.path.join(root_dir, f"methods_preds/{method_num}")
+    os.makedirs(pred_root_dir, exist_ok=True)
+    s = TerrainSegFormer(hf_dataset_name=hfdi,
+                         hf_model_name=hfmi,
+                         hf_model_ver=None)
+    s.load_model_inference()
+    s.prepare_dataset()
+    eval_ds = s.ds
+    for i in range(len(eval_ds)):
+        print(f"Processing {i+1}/{len(eval_ds)}")
+        pil_img = eval_ds[i]['pixel_values']
+        W, H = pil_img.size
+        img_name = eval_ds[i]['name']
+        noext_img_name = os.path.splitext(img_name)[0]
+        img_np = np.array(pil_img).reshape((H, W, 3))
+        depth_image = Image.open(os.path.join(root_dir, "depth", f"{noext_img_name}.png"))
+        _, nn_seg = s.predict_new_with_depth(pil_img, depth_image)
+        nn_seg_np = np.array(nn_seg).reshape((H, W))
+        flat_nn_seg_np = nn_seg_np.reshape(-1).astype(np.uint8)
+        flat_nn_seg_np.tofile(os.path.join(pred_root_dir, f"{noext_img_name}.bin"))
+
+
 def visprog_save_pred(hfdi, root_dir, method_num, prompted=False):
     pred_root_dir = os.path.join(root_dir, f"methods_preds/{method_num}")
     os.makedirs(pred_root_dir, exist_ok=True)
@@ -175,32 +201,6 @@ def visprog_save_pred(hfdi, root_dir, method_num, prompted=False):
         unified_mask[unified_mask == 0] = 2
         flat_seg_np = unified_mask.reshape(-1).astype(np.uint8)
         flat_seg_np.tofile(os.path.join(pred_root_dir, f"{noext_img_name}.bin"))
-
-
-def nn_depth_save_pred(hfdi, hfmi, root_dir, method_num):
-    """
-    Given the huggingface dataset identifier and model identifier, runs inference on the dataset and saves the predictions as bins
-    """
-    pred_root_dir = os.path.join(root_dir, f"methods_preds/{method_num}")
-    os.makedirs(pred_root_dir, exist_ok=True)
-    s = TerrainSegFormer(hf_dataset_name=hfdi,
-                         hf_model_name=hfmi,
-                         hf_model_ver=None)
-    s.load_model_inference()
-    s.prepare_dataset()
-    eval_ds = s.ds
-    for i in range(len(eval_ds)):
-        print(f"Processing {i+1}/{len(eval_ds)}")
-        pil_img = eval_ds[i]['pixel_values']
-        W, H = pil_img.size
-        img_name = eval_ds[i]['name']
-        noext_img_name = os.path.splitext(img_name)[0]
-        img_np = np.array(pil_img).reshape((H, W, 3))
-        depth_image = Image.open(os.path.join(root_dir, "depth", f"{noext_img_name}.png"))
-        _, nn_seg = s.predict_new_with_depth(pil_img, depth_image)
-        nn_seg_np = np.array(nn_seg).reshape((H, W))
-        flat_nn_seg_np = nn_seg_np.reshape(-1).astype(np.uint8)
-        flat_nn_seg_np.tofile(os.path.join(pred_root_dir, f"{noext_img_name}.bin"))
 
 
 def gt_save(hfdi, root_dir):
@@ -233,6 +233,7 @@ if __name__ == "__main__":
     parser.add_argument("--eval_sdi", type=str, default="smodak/pickup-utcustom-eval", help="Segments.ai dataset identifier, needed only for gpt4v")
     parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
+    parser.add_argument("--hfmi", type=str, default=None, help="Optionally pass a diff hfmi for nn methods")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--step_size", type=int, default=1)
     args = parser.parse_args()
@@ -246,14 +247,15 @@ if __name__ == "__main__":
                 root_dir=eval_root_dir)
 
     if methods_metadata[str(args.method_num)]["type"] == "nn":
+        hfmi = args.hfmi if args.hfmi is not None else methods_metadata[str(args.method_num)]["model-hfmi"]
         if "depth" in methods_metadata[str(args.method_num)]["name"]:
             nn_depth_save_pred(hfdi=args.eval_hfdi,
-                               hfmi=methods_metadata[str(args.method_num)]["model-hfmi"],
+                               hfmi=hfmi,
                                root_dir=eval_root_dir,
                                method_num=args.method_num)
         else:
             nn_save_pred(hfdi=args.eval_hfdi,
-                         hfmi=methods_metadata[str(args.method_num)]["model-hfmi"],
+                         hfmi=hfmi,
                          root_dir=eval_root_dir,
                          method_num=args.method_num)
     elif methods_metadata[str(args.method_num)]["type"] == "ns":
