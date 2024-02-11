@@ -226,7 +226,7 @@ def gt_save(hfdi, root_dir):
 if __name__ == "__main__":
     root_dir = os.path.join(nspl_root_dir, "evals_data_dropoff/utcustom")
 
-    methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/safety/methods_metadata.json"))
+    methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/dropoff/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--eval_di", type=str, default="sam1120/dropoff-utcustom-EVAL")
@@ -258,7 +258,7 @@ if __name__ == "__main__":
         hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
-            filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/safety/synthesized_sketch.txt")).strip()
+            filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/dropoff/synthesized_sketch.txt")).strip()
             fi = FasterImageInference(DOMAIN)
         terrain = fi._terrain
         in_the_way = fi._in_the_way
