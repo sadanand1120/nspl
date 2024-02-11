@@ -1,0 +1,8 @@
+def is_safe(pixel_loc):
+    if terrain(pixel_loc) == 0:
+        if distance_to_person(pixel_loc) > ?? and distance_to_pole(pixel_loc) > ?? and in_the_way(pixel_loc) == 0 and frontal_distance_entrance(pixel_loc) > ?? and distance_to_bush(pixel_loc) > ?? and distance_to_barricade(pixel_loc) > ?? and distance_to_tree(pixel_loc) > ?? and distance_to_board(pixel_loc) > ?? and frontal_distance_staircase(pixel_loc) > ?? and distance_to_car(pixel_loc) > ?? and slope(pixel_loc) < ??:
+            return True
+    elif terrain(pixel_loc) == 3:
+        if frontal_distance_entrance(pixel_loc) > ?? and distance_to_wall(pixel_loc) > ??:
+            return True
+    return False

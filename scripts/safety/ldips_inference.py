@@ -9,7 +9,7 @@ from copy import deepcopy
 from PIL import Image
 from sklearn.decomposition import PCA
 
-from llm.preprompts.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
+from terrainseg.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
 from terrainseg.inference import TerrainSegFormer
 from utilities.local_to_map_frame import LocalToMapFrame
 from zeroshot_objdet.sam_dino import GroundedSAM
@@ -325,80 +325,3 @@ class NSInferTerrainSeg:
         max_zdiff_img[x_indices, y_indices] = max_zdiff.squeeze()
         max_zdiff_img = max_zdiff_img * scale
         return max_zdiff_img.squeeze()
-
-
-if __name__ == "__main__":
-    # domain_terrains = [
-    #     "bricks",
-    #     "grass",
-    #     "road",
-    #     "sidewalk",
-    #     "speedway",
-    #     "tiles"
-    # ]
-    # ns = NSInferTerrainSeg()
-    # img_bgr = cv2.imread(os.path.join(nspl_root_dir, "full_eval_dataset/morning_mode1_2_11062023_1/images/morning_mode1_2_11062023_1_000420.png"))
-    # pc_np = np.fromfile(os.path.join(nspl_root_dir, "full_eval_dataset/morning_mode1_2_11062023_1/pcs/morning_mode1_2_11062023_1_000420.bin"), dtype=np.float32).reshape((-1, 4))
-    # pc_np = pc_np[:, :3]
-    # grad_mask = ns.main_slope(img_bgr, pc_np)
-    # plt.imshow(grad_mask)
-    # plt.show()
-    # print(np.max(grad_mask))
-    # print(np.min(grad_mask))
-
-    # # cv2.imshow("pred_seg", TerrainSegFormer.get_seg_overlay(img_bgr, final_mask))
-    # # cv2.waitKey(0)
-    # # cv2.destroyAllWindows()
-    # ------------------------------------------------------------------------------------------------------------------
-
-    # hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
-    # filled_ldips_sketch = reader(os.path.join(nspl_root_dir, "scripts/synthesis/synthesized_sketch.txt"))
-
-    # CUR_IMG_BGR = cv2.imread(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/eval-44/images/000007_morning_mode1_11062023_000211.png"))
-    # CUR_PC_XYZ = np.fromfile(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/eval-44/pcs/000007_morning_mode1_11062023_000211.bin"), dtype=np.float32).reshape((-1, 4))[:, :3]
-    # DOMAIN = hitl_llm_state["domain"]
-
-    # ldips_infer_ns = LDIPSPixelInference(DOMAIN)
-    # ldips_infer_ns.set_state(CUR_IMG_BGR, CUR_PC_XYZ)
-    # terrain = ldips_infer_ns.terrain
-    # in_the_way = ldips_infer_ns.in_the_way
-    # slope = ldips_infer_ns.slope
-
-    # for method_name in ['distance_to_' + obj for obj in DOMAIN["objects"]]:
-    #     globals()[method_name] = bind_method(ldips_infer_ns, method_name)
-
-    # for method_name in ['frontal_distance_' + obj for obj in DOMAIN["objects"]]:
-    #     globals()[method_name] = bind_method(ldips_infer_ns, method_name)
-
-    # exec(filled_ldips_sketch)
-    # is_safe_mask = np.zeros((CUR_IMG_BGR.shape[0], CUR_IMG_BGR.shape[1]), dtype=np.int64)
-    # for i in range(CUR_IMG_BGR.shape[0]):
-    #     print(f">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Processing row: {i}/{CUR_IMG_BGR.shape[0]}")
-    #     for j in range(CUR_IMG_BGR.shape[1]):
-    #         print(f"Processing column: {j}/{CUR_IMG_BGR.shape[1]}", end='\x1b[1K\r')  # print on same line after clearing
-    #         is_safe_mask[i, j] = is_safe((j, i))
-    #     print("\033[F\033[K", end="")  # Move up and clear the line
-
-    # print("Processing complete.")
-
-    # cv2.imshow("is_safe_mask", TerrainSegFormer.get_seg_overlay(CUR_IMG_BGR, is_safe_mask))
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # ------------------------------------------------------------------------------------------------------------------
-
-    CUR_IMG_BGR = cv2.imread(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/eval-44/images/000008_morning_mode1_11062023_000225.png"))
-    CUR_PC_XYZ = np.fromfile(os.path.join(nspl_root_dir, "evals_data_safety/utcustom/eval-44/pcs/000008_morning_mode1_11062023_000225.bin"), dtype=np.float32).reshape((-1, 4))[:, :3]
-    ns_infer_objdet = NSInferObjDet()
-    dmask, *_ = ns_infer_objdet.main_distance_to(CUR_IMG_BGR, CUR_PC_XYZ, "car", box_threshold=0.37, text_threshold=0.37, nms_threshold=0.3)
-    cv2.imshow("dmask", TerrainSegFormer.get_seg_overlay(CUR_IMG_BGR, dmask > 4.0))
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-    # ns_infer_terrainseg = NSInferTerrainSeg()
-    # grad_mask = ns_infer_terrainseg.main_slope(CUR_IMG_BGR, CUR_PC_XYZ)
-    # bool_mask = grad_mask > 80.0
-    # side_by_side = np.hstack((CUR_IMG_BGR, TerrainSegFormer.get_seg_overlay(CUR_IMG_BGR, bool_mask)))
-    # cv2.imshow("side_by_side", side_by_side)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()

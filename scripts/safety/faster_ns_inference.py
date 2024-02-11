@@ -3,10 +3,10 @@ nspl_root_dir = os.environ.get("NSPL_REPO")
 import numpy as np
 import cv2
 
-from llm.preprompts.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
+from terrainseg.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
 from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import json_reader
-from ldips_inference import NSInferObjDet, NSInferTerrainSeg
+from safety.ldips_inference import NSInferObjDet, NSInferTerrainSeg
 
 
 class FasterImageInference:

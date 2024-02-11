@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image
 from terrainseg.training.train import prepare_dataset
 from safety.dutils import remove_username
-from llm.preprompts.ALL_TERRAINS_MAPS import DATASETINTstr_TO_DATASETLABELS
+from terrainseg.ALL_TERRAINS_MAPS import DATASETINTstr_TO_DATASETLABELS
 
 
 class TerrainSegFormer:
