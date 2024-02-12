@@ -6,6 +6,7 @@ import numpy as np
 from terrainseg.inference import TerrainSegFormer
 import cv2
 from pprint import pprint
+from simple_colors import red, green
 
 EXCLUDE_IDX = {
     "train/utcustom": [11, 17, 34, 38, 46, 14, 13, 1, 26, 21, 9, 16, 20, 37, 47, 28, 48],
@@ -142,5 +143,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     root_dirnames = args.root_dirname.split(",")
     iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
-    print(f"Evaluation results for method {args.method_num}:")
-    pprint(iou_dict)
+    print(green(f"Evaluation results for method {args.method_num}:", "bold"))
+    pprint(green(iou_dict, "bold"))

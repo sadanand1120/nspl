@@ -20,3 +20,11 @@ def infer_visprog(pil_img, prompt):
     prog, _ = generator.generate(prompt)
     result, prog_state, html_str = interpreter.execute(prog, init_state, inspect=True)
     return result, prog_state, html_str
+
+
+if __name__ == "__main__":
+    img = Image.open(os.path.join(nspl_root_dir, "third_party/visprog/assets/camel1.png"))
+    prompt = "Replace desert with water."
+    result, prog_state, html_str = infer_visprog(img, prompt)
+    plt.imshow(result)
+    plt.show()
