@@ -56,6 +56,7 @@ class TerrainSegFormer:
         self.hf_model_ver = hf_model_ver
         self.train_percentd = train_percentd  # DO NOT CHANGE THIS TO HAVE SAME test_ds
         self.val_percentd = val_percentd  # DO NOT CHANGE THIS TO HAVE SAME test_ds
+        self.id2label_filename = "id2label.json"
 
         self.hf_dataset_identifier = f"{self.hf_username}/{self.hf_dataset_name}"
         self.hub_model_id = self.hf_model_name
