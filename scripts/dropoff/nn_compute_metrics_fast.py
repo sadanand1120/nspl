@@ -18,7 +18,7 @@ from terrainseg.inference import TerrainSegFormer
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--cuda', type=str, required=True, help='CUDA gpus allowed to be used (comma-separated)')
+    parser.add_argument('--cuda', type=str, default="0", help='CUDA gpus allowed to be used (comma-separated)')
     parser.add_argument("--eval_hfdi", type=str, required=True)
     parser.add_argument("--hfmi", type=str, required=True)
     args = parser.parse_args()
@@ -31,4 +31,9 @@ if __name__ == "__main__":
 
     pred_ds = s.ds
     print(green(f"LOGINFO: Predicting metrics...", "bold"))
-    pprint(green(s.predict_ds_metrics_wrapper(pred_ds), "bold"))
+    metrics = s.predict_ds_metrics_wrapper(pred_ds)
+    iou_dict = {}
+    iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
+    iou_dict["IOU_dropoff"] = round(metrics["iou_dropoff"] * 100, 2)
+    iou_dict["IOU_undropoff"] = round(metrics["iou_undropoff"] * 100, 2)
+    pprint(green(iou_dict, "bold"))

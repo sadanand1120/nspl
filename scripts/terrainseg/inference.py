@@ -13,7 +13,6 @@ import numpy as np
 from PIL import Image
 from terrainseg.training.train import prepare_dataset
 from dropoff.dutils import remove_username
-from terrainseg.ALL_TERRAINS_MAPS import DATASETINTstr_TO_DATASETLABELS
 
 
 class TerrainSegFormer:
@@ -63,7 +62,9 @@ class TerrainSegFormer:
         if self.hub_model_id is None:
             self.hub_model_id = f"segformer-b{self.segformer_model_id}-finetuned-{self.hf_dataset_name}-v{self.hf_model_ver}"
 
-        self.id2label = {int(k): v for k, v in DATASETINTstr_TO_DATASETLABELS.items()}
+        self.id2label = json.load(open(hf_hub_download(repo_id=self.hf_dataset_identifier, filename=self.id2label_filename, repo_type="dataset"), "r"))
+        self.id2label = {int(k): v for k, v in self.id2label.items()}
+        self.label2id = {v: k for k, v in self.id2label.items()}
         self.num_labels = len(self.id2label)
 
         self.metric = evaluate.load("mean_iou")
