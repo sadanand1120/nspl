@@ -4,19 +4,9 @@ NOTE: ONLY for nn models, not for nn-depth models
 import os
 nspl_root_dir = os.environ.get("NSPL_REPO")
 import argparse
-from datasets import load_dataset
-import numpy as np
 from terrainseg.inference import TerrainSegFormer
-from utilities.std_utils import reader, json_reader, writer, json_writer
-import cv2
-from PIL import Image
-from dropoff.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
-from dropoff._visprog_inference import infer_visprog
-from llm._vlm import get_vlm_response
-from segments import SegmentsClient
-import re
 from pprint import pprint
-from simple_colors import red, green
+from simple_colors import green
 from terrainseg.inference import TerrainSegFormer
 
 if __name__ == "__main__":
