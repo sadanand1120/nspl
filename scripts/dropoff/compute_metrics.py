@@ -144,4 +144,4 @@ if __name__ == "__main__":
     root_dirnames = args.root_dirname.split(",")
     iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
     print(green(f"Evaluation results for method {args.method_num}:", "bold"))
-    pprint(green(iou_dict, "bold"))
+    pprint(iou_dict)

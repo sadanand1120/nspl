@@ -1,3 +1,6 @@
+"""
+NOTE: ONLY for nn models, not for nn-depth models
+"""
 import os
 nspl_root_dir = os.environ.get("NSPL_REPO")
 import argparse
@@ -36,4 +39,4 @@ if __name__ == "__main__":
     iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
     iou_dict["IOU_dropoff"] = round(metrics["iou_dropoff"] * 100, 2)
     iou_dict["IOU_undropoff"] = round(metrics["iou_undropoff"] * 100, 2)
-    pprint(green(iou_dict, "bold"))
+    pprint(iou_dict)
