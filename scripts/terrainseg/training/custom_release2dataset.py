@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 def my_release2dataset(release: Release, num_parts: int = -1, download_images: bool = True) -> datasets.Dataset:
     if num_parts <= 0:
         num_parts = release.samples_count // 16
+        if num_parts < 1:
+            num_parts = 1
 
     content = requests.get(cast(str, release.attributes.url))
     release_dict = json.loads(content.content)
