@@ -10,7 +10,6 @@ args.add_argument("--rootdir", type=str, required=True)
 args = args.parse_args()
 
 lcc = JackalLidarCamCalibration(ros_flag=False)
-# root_dir = os.path.join(nspl_root_dir, "evals_data_safety/utcustom/train/ns1")
 root_dir = args.rootdir
 depth_root_dir = os.path.join(root_dir, "depth")
 os.makedirs(depth_root_dir, exist_ok=True)
