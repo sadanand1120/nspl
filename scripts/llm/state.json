@@ -1,16 +1,11 @@
 {
     "domain": {
         "objects": [
-            "barricade",
-            "board",
             "bush",
             "car",
             "entrance",
             "person",
-            "pole",
-            "staircase",
-            "tree",
-            "wall"
+            "staircase"
         ],
         "terrains": [
             "bricks",
