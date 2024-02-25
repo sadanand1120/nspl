@@ -1,16 +1,6 @@
 {
     "0": "unlabeled",
-    "1": "NAT",
-    "2": "concrete",
-    "3": "grass",
-    "4": "speedway bricks",
-    "5": "steel",
-    "6": "rough concrete",
-    "7": "dark bricks",
-    "8": "road",
-    "9": "rough red sidewalk",
-    "10": "tiles",
-    "11": "red bricks",
-    "12": "concrete tiles",
-    "13": "REST"
+    "1": "sidewalk",
+    "2": "road",
+    "3": "ELSE"
 }
