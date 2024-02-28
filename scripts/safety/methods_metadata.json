@@ -86,5 +86,21 @@
     "41": {
         "name": "ns-notraj",
         "type": "ns"
+    },
+    "601": {
+        "name": "ns-codellama",
+        "type": "ns"
+    },
+    "602": {
+        "name": "ns-starcoder",
+        "type": "ns"
+    },
+    "603": {
+        "name": "ns-gpt3.5",
+        "type": "ns"
+    },
+    "604": {
+        "name": "ns-palm2",
+        "type": "ns"
     }
 }
