@@ -248,12 +248,16 @@ class FasterImageInference:
     def available_obj(self, img_bgr, pc_xyz, obj_name):
         fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_available_{obj_name}.bin")
         if os.path.exists(fullpath):
-            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
+            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))[0][0]
         ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
         terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
         per_class_mask = (terrainmarks_out == ego_terrainmark_idx).astype(np.uint8).squeeze()
         tot = np.sum(per_class_mask)
-        return tot > 100  # more than 100 pixels
+        b = tot > 100  # more than 100 pixels
+        bool_arr = np.ones((img_bgr.shape[0], img_bgr.shape[1]), dtype=np.uint8) * b
+        flat_ret_out = bool_arr.reshape(-1).astype(np.uint8)
+        flat_ret_out.tofile(fullpath)
+        return b
 
     def within_obj(self, img_bgr, pc_xyz, obj_name):
         fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_within_{obj_name}.bin")
@@ -274,7 +278,10 @@ class FasterImageInference:
         # dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
         # dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
 
-        return 0.0 < dist_to_obj < 2.0
+        bool_arr = 0.0 < dist_to_obj < 2.0
+        flat_ret_out = bool_arr.reshape(-1).astype(np.uint8)
+        flat_ret_out.tofile(fullpath)
+        return bool_arr
 
     def frontal_distance_to_obj(self, img_bgr, pc_xyz, obj_name):
         fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_frontal_distance_to_{obj_name}.bin")
