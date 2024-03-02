@@ -246,6 +246,9 @@ class FasterImageInference:
         return ret_out
 
     def available_obj(self, img_bgr, pc_xyz, obj_name):
+        fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_available_{obj_name}.bin")
+        if os.path.exists(fullpath):
+            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
         ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
         terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
         per_class_mask = (terrainmarks_out == ego_terrainmark_idx).astype(np.uint8).squeeze()
@@ -253,6 +256,9 @@ class FasterImageInference:
         return tot > 100  # more than 100 pixels
 
     def within_obj(self, img_bgr, pc_xyz, obj_name):
+        fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_within_{obj_name}.bin")
+        if os.path.exists(fullpath):
+            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
         if not self.available_obj(img_bgr, pc_xyz, obj_name):
             return np.zeros((img_bgr.shape[0], img_bgr.shape[1]), dtype=np.uint8)
 
