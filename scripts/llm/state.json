@@ -1,24 +1,21 @@
 {
     "domain": {
         "objects": [
-            "barricade",
-            "board",
-            "bush",
+            "parking_lines",
+            "X",
             "car",
-            "entrance",
             "person",
-            "pole",
-            "staircase",
-            "tree",
-            "wall"
+            "sidewalk",
+            "road"
         ],
         "terrains": [
-            "bricks",
-            "grass",
-            "road",
             "sidewalk",
-            "speedway",
-            "tiles"
+            "road",
+            "ELSE"
+        ],
+        "terrainmarks": [
+            "parking_lines",
+            "X"
         ]
     }
 }

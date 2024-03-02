@@ -27,6 +27,6 @@ if __name__ == "__main__":
     metrics = s.predict_ds_metrics_wrapper(pred_ds)
     iou_dict = {}
     iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
-    iou_dict["IOU_dropoff"] = round(metrics["iou_dropoff"] * 100, 2)
-    iou_dict["IOU_undropoff"] = round(metrics["iou_undropoff"] * 100, 2)
+    iou_dict["IOU_parking"] = round(metrics["iou_parking"] * 100, 2)
+    iou_dict["IOU_unparking"] = round(metrics["iou_unparking"] * 100, 2)
     pprint(iou_dict)

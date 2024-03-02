@@ -19,8 +19,8 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
     exclude_idx_dict = {}
     id2label = {
         0: "unlabeled",
-        1: "dropoff",
-        2: "undropoff",
+        1: "parking",
+        2: "unparking",
     }
     gt_root_dir = os.path.join(root_dir, "gt_preds")
     pred_root_dir = os.path.join(root_dir, f"methods_preds/{method_num}")
@@ -54,8 +54,8 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
         metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
         iou_dict = {}
         iou_dict["mIOU"] = metrics["mean_iou"]
-        iou_dict["IOU_dropoff"] = metrics["iou_dropoff"]
-        iou_dict["IOU_undropoff"] = metrics["iou_undropoff"]
+        iou_dict["IOU_parking"] = metrics["iou_parking"]
+        iou_dict["IOU_unparking"] = metrics["iou_unparking"]
         pprint(iou_dict)
         print("-------------------------------------------------------------------")
         if iou_dict["mIOU"] < 0.8:
@@ -72,7 +72,7 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
             # mydir = "/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/evals_data_safety/utcustom/ns_viz_dir/train"
             # cv2.imwrite(os.path.join(mydir, f"{noext_name}.png"), side_by_side)
     pprint(exclude_idx_dict)
-    sorted_exclude_idx_list = sorted(exclude_idx_dict, key=lambda x: exclude_idx_dict[x]["IOU_dropoff"])
+    sorted_exclude_idx_list = sorted(exclude_idx_dict, key=lambda x: exclude_idx_dict[x]["IOU_parking"])
     print(sorted_exclude_idx_list)
 
 
@@ -84,8 +84,8 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
         root_dirnames = [root_dirnames]
     id2label = {
         0: "unlabeled",
-        1: "dropoff",
-        2: "undropoff",
+        1: "parking",
+        2: "unparking",
     }
     all_gt_bins = []
     all_pred_bins = []
@@ -126,15 +126,15 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
     iou_dict = {}
     iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
-    iou_dict["IOU_dropoff"] = round(metrics["iou_dropoff"] * 100, 2)
-    iou_dict["IOU_undropoff"] = round(metrics["iou_undropoff"] * 100, 2)
+    iou_dict["IOU_parking"] = round(metrics["iou_parking"] * 100, 2)
+    iou_dict["IOU_unparking"] = round(metrics["iou_unparking"] * 100, 2)
     return iou_dict
 
 
 if __name__ == "__main__":
     _H = 540
     _W = 960
-    root_dir = os.path.join(nspl_root_dir, "evals_data_dropoff/utcustom")
+    root_dir = os.path.join(nspl_root_dir, "evals_data_parking/utcustom")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_dirname", type=str, default="train")  # either eval/train/test, could be many separated by commas

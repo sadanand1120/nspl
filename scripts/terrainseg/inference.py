@@ -12,7 +12,7 @@ import os
 import numpy as np
 from PIL import Image
 from terrainseg.training.train import prepare_dataset
-from dropoff.dutils import remove_username
+from parking.dutils import remove_username
 
 
 class TerrainSegFormer:
@@ -39,8 +39,8 @@ class TerrainSegFormer:
 
     def __init__(self,
                  cuda: str = "0",
-                 hf_dataset_name: str = "sam1120/safety-utcustom-terrain-jackal-full-391",
-                 hf_model_name: str = "sam1120/safety-utcustom-terrain",  # provide either this,
+                 hf_dataset_name: str = "sam1120/parking-terrain",
+                 hf_model_name: str = "sam1120/parking-terrain",  # provide either this,
                  hf_model_ver: int = 0,  # or this. Other one should be made None
                  hf_username: str = "sam1120",
                  segformer_model_id: int = 5,

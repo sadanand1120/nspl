@@ -1,70 +1,47 @@
 NSLABELS_TWOWAY_NSINT = {
-    "sidewalk": 0,
-    "grass": 1,
-    "speedway": 2,
-    "tiles": 3,
-    "bricks": 4,
-    "road": 5,
-    "NAT": 6,  # Not A Terrain
-    "rest": 7,  # Rest of the terrains
-    0: "sidewalk",
-    1: "grass",
-    2: "speedway",
-    3: "tiles",
-    4: "bricks",
-    5: "road",
-    6: "NAT",
-    7: "rest",
+    "sidewalk": 1,
+    "road": 2,
+    "ELSE": 3,
+    1: "sidewalk",
+    2: "road",
+    3: "ELSE",
 }
 
 DATASETINTstr_TO_DATASETLABELS = {
     "0": "unlabeled",
-    "1": "NAT",
-    "2": "concrete",
-    "3": "grass",
-    "4": "speedway bricks",
-    "5": "steel",
-    "6": "rough concrete",
-    "7": "dark bricks",
-    "8": "road",
-    "9": "rough red sidewalk",
-    "10": "tiles",
-    "11": "red bricks",
-    "12": "concrete tiles",
-    "13": "REST"
+    "1": "sidewalk",
+    "2": "road",
+    "3": "ELSE"
 }
 
 DATASETLABELS_TO_NSLABELS = {
-    "unlabeled": "NAT",
-    "NAT": "NAT",
-    "concrete": "sidewalk",
-    "grass": "grass",
-    "speedway bricks": "speedway",
-    "steel": "speedway",
-    "rough concrete": "sidewalk",
-    "dark bricks": "bricks",
+    "unlabeled": "ELSE",
+    "sidewalk": "sidewalk",
     "road": "road",
-    "rough red sidewalk": "sidewalk",
-    "tiles": "tiles",
-    "red bricks": "bricks",
-    "concrete tiles": "tiles",
-    "REST": "rest",
+    "ELSE": "ELSE",
 }
 
-# Following defs in terms of NSLABELS
-# IS_A_TERRAIN => simply means not NAT
-# TRAVESABLE_TERRAINS => means is a terrain + is traversable for agent (i.e., like not grass)
-# NON_TRAVERSABLE_TERRAINS => means is a terrain + is not traversable for agent (i.e., like grass)
+# ----------------------------------------------------------------------
 
-NSLABELS_TRAVERSABLE_TERRAINS = [
-    "sidewalk",
-    "speedway",
-    "road",
-    "bricks",
-    "tiles",
-]
+TERRAINMARKS_NSLABELS_TWOWAY_NSINT = {
+    1: "parking_lines",
+    2: "X",
+    3: "ELSE",
+    "parking_lines": 1,
+    "X": 2,
+    "ELSE": 3,
+}
 
-NSLABELS_NON_TRAVERSABLE_TERRAINS = [
-    "grass",
-    "rest",
-]
+TERRAINMARKS_DATASETINTstr_TO_DATASETLABELS = {
+    "0": "unlabeled",
+    "1": "parking_lines",
+    "2": "X",
+    "3": "ELSE"
+}
+
+TERRAINMARKS_DATASETLABELS_TO_NSLABELS = {
+    "unlabeled": "ELSE",
+    "parking_lines": "parking_lines",
+    "X": "X",
+    "ELSE": "ELSE",
+}

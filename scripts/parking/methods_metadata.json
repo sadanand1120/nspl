@@ -5,22 +5,22 @@
     },
     "4": {
         "name": "nn-segformer-b0",
-        "model-hfmi": "sam1120/dropoff-utcustom-train-SF-RGB-b0",
+        "model-hfmi": "sam1120/parking-utcustom-train-SF-RGB-b0",
         "type": "nn"
     },
     "5": {
         "name": "nn-segformer-b5",
-        "model-hfmi": "sam1120/dropoff-utcustom-train-SF-RGB-b5",
+        "model-hfmi": "sam1120/parking-utcustom-train-SF-RGB-b5",
         "type": "nn"
     },
     "6": {
         "name": "nn-depth-segformer-b0",
-        "model-hfmi": "sam1120/dropoff-utcustom-train-SF-RGBD-b0",
+        "model-hfmi": "sam1120/parking-utcustom-train-SF-RGBD-b0",
         "type": "nn"
     },
     "7": {
         "name": "nn-depth-segformer-b5",
-        "model-hfmi": "sam1120/dropoff-utcustom-train-SF-RGBD-b5",
+        "model-hfmi": "sam1120/parking-utcustom-train-SF-RGBD-b5",
         "type": "nn"
     },
     "8": {

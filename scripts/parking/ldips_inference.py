@@ -9,7 +9,7 @@ from copy import deepcopy
 from PIL import Image
 from sklearn.decomposition import PCA
 
-from terrainseg.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, NSLABELS_TRAVERSABLE_TERRAINS, NSLABELS_NON_TRAVERSABLE_TERRAINS
+from terrainseg.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTstr_TO_DATASETLABELS, DATASETLABELS_TO_NSLABELS, TERRAINMARKS_NSLABELS_TWOWAY_NSINT, TERRAINMARKS_DATASETINTstr_TO_DATASETLABELS, TERRAINMARKS_DATASETLABELS_TO_NSLABELS
 from terrainseg.inference import TerrainSegFormer
 from utilities.local_to_map_frame import LocalToMapFrame
 from zeroshot_objdet.sam_dino import GroundedSAM
@@ -60,13 +60,14 @@ class NSInferObjDet:
         wcs_coords = self.projectMaptoWCS(map_coords, ldict)
         return self.lidar_cam_calib.jackal_cam_calib.projectWCStoPCS(wcs_coords)
 
-    def main_distance_to(self, img_bgr, pc_np, obj_name: str, box_threshold=None, text_threshold=None, nms_threshold=None):
+    def main_distance_to(self, img_bgr, pc_np, obj_name: str, box_threshold=None, text_threshold=None, nms_threshold=None, per_class_mask=None):
         """
         Runs SAM on the image for the given object and returns the corresponding distance array for each pixel in the image
         Returns: dist_array H x W + bool to indicate if detections were found
         """
-        ann_img, detections, per_class_mask = self.sam_dino_model.predict_and_segment_on_image(img_bgr, [obj_name], box_threshold=box_threshold, text_threshold=text_threshold, nms_threshold=nms_threshold)
-        per_class_mask = per_class_mask[0].squeeze()  # since we only have one class
+        if per_class_mask is None:
+            ann_img, detections, per_class_mask = self.sam_dino_model.predict_and_segment_on_image(img_bgr, [obj_name], box_threshold=box_threshold, text_threshold=text_threshold, nms_threshold=nms_threshold)
+            per_class_mask = per_class_mask[0].squeeze()  # since we only have one class
         all_pixel_locs, all_vlp_coords, *_ = self.lidar_cam_calib.projectPCtoImageFull(pc_np, img_bgr)
         all_mask_values = per_class_mask[all_pixel_locs[:, 1], all_pixel_locs[:, 0]]
         class_pixel_locs = all_pixel_locs[all_mask_values]
@@ -177,9 +178,15 @@ class NSInferTerrainSeg:
             self.terrain_model.load_model_inference()
             self.terrain_model.prepare_dataset()
         else:
-            self.lidar_cam_calib = MODELS["lidar_cam_calib"]
-            self.local_to_map_frame = MODELS["local_to_map_frame"]
-            self.terrain_model = MODELS["terrain_model"]
+            # Check individual models
+            self.lidar_cam_calib = MODELS["lidar_cam_calib"] if "lidar_cam_calib" in MODELS.keys() else JackalLidarCamCalibration(ros_flag=False)
+            self.local_to_map_frame = MODELS["local_to_map_frame"] if "local_to_map_frame" in MODELS.keys() else LocalToMapFrame()
+            if "terrain_model" in MODELS.keys():
+                self.terrain_model = MODELS["terrain_model"]
+            else:
+                self.terrain_model = TerrainSegFormer(hf_model_ver=None)
+                self.terrain_model.load_model_inference()
+                self.terrain_model.prepare_dataset()
 
     def projectMapToPCS(self, map_coords, ldict):
         """
@@ -211,7 +218,7 @@ class NSInferTerrainSeg:
         final_index = new_terrains.index(new_name) if new_name in new_terrains else new_terrains.index('dunno')
         return final_index
 
-    def main_terrain(self, img_bgr, domain_terrains):
+    def main_terrain(self, img_bgr, domain_terrains, gt_seg=None):
         """
         Runs terrain segmentation on one image
         Returns: pred_seg H x W + new_terrains
@@ -219,9 +226,12 @@ class NSInferTerrainSeg:
         pil_img_np = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
         pil_img = Image.fromarray(pil_img_np)
         new_terrains = ["dunno"] + domain_terrains
-        _, pred_seg = self.terrain_model.predict_new(pil_img)
-        pred_seg = smoothing_filter(pred_seg)
-        pred_seg = np.asarray(pred_seg).squeeze()
+        if gt_seg is None:
+            _, pred_seg = self.terrain_model.predict_new(pil_img)
+            pred_seg = smoothing_filter(pred_seg)
+            pred_seg = np.asarray(pred_seg).squeeze()
+        else:
+            pred_seg = gt_seg
         vec_convert_label = np.vectorize(self.convert_label, excluded=[1, 2, 3])
         pred_seg = np.asarray(vec_convert_label(pred_seg, self.terrain_model.id2label, DATASETLABELS_TO_NSLABELS, new_terrains)).squeeze()
         return pred_seg.squeeze(), new_terrains

@@ -7,8 +7,8 @@ from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import reader, json_reader, writer, json_writer
 import cv2
 from PIL import Image
-from dropoff.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
-from dropoff._visprog_inference import infer_visprog
+from parking.faster_ns_inference import FasterImageInference, FasterImageInferenceCaP
+from parking._visprog_inference import infer_visprog
 from llm._vlm import get_vlm_response
 from segments import SegmentsClient
 import re
@@ -112,7 +112,7 @@ def ns_save_pred(hfdi, root_dir, method_num, ldips_infer_ns_obj: FasterImageInfe
             for j in range(cv2_img.shape[1]):
                 print(f"Processing column: {j}/{cv2_img.shape[1]}", end='\r')
                 try:
-                    is_safe_mask[k, j] = is_dropoff((j, k))
+                    is_safe_mask[k, j] = is_parking((j, k))
                 except:
                     print(red(f"\nError in processing pixel: {j}/{cv2_img.shape[1]}\n", "bold"))
                     is_safe_mask[k, j] = False
@@ -183,9 +183,9 @@ def visprog_save_pred(hfdi, root_dir, method_num, prompted=False):
     s.prepare_dataset()
     eval_ds = s.ds
     if prompted:
-        prompt = "Dropoff location = sidewalk or concrete, and far away from objects. Replace dropoff location with snow."
+        prompt = "parking location = sidewalk or concrete, and far away from objects. Replace parking location with snow."
     else:
-        prompt = "Replace a good dropoff location for a taxi to pull over to with snow."
+        prompt = "Replace a good parking location for a taxi to pull over to with snow."
     for i in range(len(eval_ds)):
         print(green(f"Processing {i+1}/{len(eval_ds)}", "bold"))
         pil_img = eval_ds[i]['pixel_values']
@@ -224,15 +224,16 @@ def gt_save(hfdi, root_dir):
 
 
 if __name__ == "__main__":
-    root_dir = os.path.join(nspl_root_dir, "evals_data_dropoff/utcustom")
+    root_dir = os.path.join(nspl_root_dir, "evals_data_parking/utcustom")
 
-    methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/dropoff/methods_metadata.json"))
+    methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/parking/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_hfdi", type=str, default="sam1120/dropoff-utcustom-EVAL")
+    parser.add_argument("--eval_hfdi", type=str, default="sam1120/parking-utcustom-EVAL")
     parser.add_argument("--eval_sdi", type=str, default="smodak/pickup-utcustom-eval", help="Segments.ai dataset identifier, needed only for gpt4v")
     parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
+    parser.add_argument("--gtsave", action="store_true")
     parser.add_argument("--hfmi", type=str, default=None, help="Optionally pass a diff hfmi for nn methods")
     parser.add_argument("--start", type=int, default=0)
     parser.add_argument("--step_size", type=int, default=1)
@@ -241,10 +242,11 @@ if __name__ == "__main__":
     print(green(f"*************** Saving predictions for {args.root_dirname} and method {args.method_num}... ***************", "bold"))
 
     eval_root_dir = os.path.join(root_dir, args.root_dirname)
-    if not os.path.exists(os.path.join(eval_root_dir, "gt_preds")):
-        print(f"Saving ground truth labels for {args.root_dirname}...")
-        gt_save(hfdi=args.eval_hfdi,
-                root_dir=eval_root_dir)
+    if args.gtsave:
+        if not os.path.exists(os.path.join(eval_root_dir, "gt_preds")):
+            print(f"Saving ground truth labels for {args.root_dirname}...")
+            gt_save(hfdi=args.eval_hfdi,
+                    root_dir=eval_root_dir)
 
     if methods_metadata[str(args.method_num)]["type"] == "nn":
         hfmi = args.hfmi if args.hfmi is not None else methods_metadata[str(args.method_num)]["model-hfmi"]
@@ -263,14 +265,19 @@ if __name__ == "__main__":
         hitl_llm_state = json_reader(os.path.join(nspl_root_dir, "scripts/llm/state.json"))
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
-            filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/dropoff/synthesized_sketch.txt")).strip()
+            filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/parking/synthesized_sketch.txt")).strip()
             fi = FasterImageInference(DOMAIN)
         terrain = fi._terrain
+        terrainmark = fi._terrainmarks
         in_the_way = fi._in_the_way
         slope = fi._slope
         for method_name in ['distance_to_' + obj for obj in DOMAIN["objects"]]:
             globals()[method_name] = bind_method(fi, f"_{method_name}")
         for method_name in ['frontal_distance_' + obj for obj in DOMAIN["objects"]]:
+            globals()[method_name] = bind_method(fi, f"_{method_name}")
+        for method_name in ['available_' + tm for tm in DOMAIN["terrainmarks"]]:
+            globals()[method_name] = bind_method(fi, f"_{method_name}")
+        for method_name in ['within' + tm for tm in DOMAIN["terrainmarks"]]:
             globals()[method_name] = bind_method(fi, f"_{method_name}")
         exec(filled_lfps_sketch)
         ns_save_pred(hfdi=args.eval_hfdi,

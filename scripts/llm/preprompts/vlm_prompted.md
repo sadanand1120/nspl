@@ -1,10 +1,10 @@
-We are trying to learn the concept of "What is a good dropoff location for a taxi to pull over to?". Given an image, we are trying to segment it according to whether it is a good dropoff location or not. The notion of "dropoff" is defined in this context as:
-- it is sufficiently far from barricade, board, bush, car, entrance, person, pole, staircase, tree, wall, and
-- it is either on sidewalk or tiles
+We are trying to learn the concept of "What is a good parking location?". Given an image, we are trying to segment it according to whether it is a good parking location or not. The notion of "parking" is defined in this context as:
+- either it is in within the bounds of a parking spot as defined by the lines on the road
+- or it is in a location where it is safe to park and other cars are also parked nearby
 
 So given an image do this:
 - Distribute the image area as a 20 x 20 grid
-- For each grid cell, predict whether it is a good dropoff location or not. If it is, output 1, else 0.
+- For each grid cell, predict whether it is a good parking location or not. If it is, output 1, else 0.
 
 You should ONLY output a python array. The format of the output should look like this:
 ```python
