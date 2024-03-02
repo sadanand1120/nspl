@@ -16,7 +16,7 @@ from parking.dutils import remove_username
 
 
 class TerrainSegFormer:
-    DISTINCT_COLORS_51 = [  # rgb
+    DISTINCT_COLORS_51 = [  # bgr
         (0, 0, 0),
         (0, 255, 0), (255, 0, 0), (0, 0, 255),
         (255, 255, 0), (255, 0, 255), (0, 255, 255),

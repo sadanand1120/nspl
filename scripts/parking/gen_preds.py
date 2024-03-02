@@ -229,9 +229,9 @@ if __name__ == "__main__":
     methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/parking/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_hfdi", type=str, default="sam1120/parking-utcustom-EVAL")
+    parser.add_argument("--eval_hfdi", type=str, default="sam1120/parking-utcustom-train")
     parser.add_argument("--eval_sdi", type=str, default="smodak/pickup-utcustom-eval", help="Segments.ai dataset identifier, needed only for gpt4v")
-    parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
+    parser.add_argument("--root_dirname", type=str, default="train")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument("--gtsave", action="store_true")
     parser.add_argument("--hfmi", type=str, default=None, help="Optionally pass a diff hfmi for nn methods")
@@ -277,7 +277,7 @@ if __name__ == "__main__":
             globals()[method_name] = bind_method(fi, f"_{method_name}")
         for method_name in ['available_' + tm for tm in DOMAIN["terrainmarks"]]:
             globals()[method_name] = bind_method(fi, f"_{method_name}")
-        for method_name in ['within' + tm for tm in DOMAIN["terrainmarks"]]:
+        for method_name in ['within_' + tm for tm in DOMAIN["terrainmarks"]]:
             globals()[method_name] = bind_method(fi, f"_{method_name}")
         exec(filled_lfps_sketch)
         ns_save_pred(hfdi=args.eval_hfdi,

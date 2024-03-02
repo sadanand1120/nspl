@@ -1,10 +1,10 @@
 NSLABELS_TWOWAY_NSINT = {
-    "sidewalk": 1,
-    "road": 2,
-    "ELSE": 3,
-    1: "sidewalk",
-    2: "road",
-    3: "ELSE",
+    "sidewalk": 0,
+    "road": 1,
+    "ELSE": 2,
+    0: "sidewalk",
+    1: "road",
+    2: "ELSE",
 }
 
 DATASETINTstr_TO_DATASETLABELS = {
@@ -24,12 +24,12 @@ DATASETLABELS_TO_NSLABELS = {
 # ----------------------------------------------------------------------
 
 TERRAINMARKS_NSLABELS_TWOWAY_NSINT = {
-    1: "parking_lines",
-    2: "X",
-    3: "ELSE",
-    "parking_lines": 1,
-    "X": 2,
-    "ELSE": 3,
+    0: "parking_lines",
+    1: "X",
+    2: "ELSE",
+    "parking_lines": 0,
+    "X": 1,
+    "ELSE": 2,
 }
 
 TERRAINMARKS_DATASETINTstr_TO_DATASETLABELS = {

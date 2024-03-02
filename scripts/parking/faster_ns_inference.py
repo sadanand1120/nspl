@@ -45,6 +45,7 @@ class FasterImageInference:
         self.cur_img_bgr = None
         self.cur_pc_xyz = None
         self.cur_main_terrain_output = None
+        self.cur_main_terrainmarks_output = None
         self.cur_main_in_the_way_output = None
         self.cur_main_slope_output = None
         self.cur_distance_to_output = None  # dict of objects to outputs
@@ -60,6 +61,7 @@ class FasterImageInference:
         self.cur_img_bgr = img_bgr
         self.cur_pc_xyz = pc_xyz
         self.cur_main_terrain_output = None
+        self.cur_main_terrainmarks_output = None
         self.cur_main_in_the_way_output = None
         self.cur_main_slope_output = None
         self.cur_distance_to_output = None  # dict of objects to outputs
@@ -102,9 +104,9 @@ class FasterImageInference:
         """
         Returns the terrainmark idx at the given pixel location
         """
-        if self.cur_main_terrain_output is None:
-            self.cur_main_terrain_output = self.terrainmarks(self.cur_img_bgr, self.cur_pc_xyz)
-        return int(self.cur_main_terrain_output[pixel_loc[1], pixel_loc[0]])
+        if self.cur_main_terrainmarks_output is None:
+            self.cur_main_terrainmarks_output = self.terrainmarks(self.cur_img_bgr, self.cur_pc_xyz)
+        return int(self.cur_main_terrainmarks_output[pixel_loc[1], pixel_loc[0]])
 
     def _in_the_way(self, pixel_loc):
         """
@@ -190,8 +192,8 @@ class FasterImageInference:
             gt_seg = np.fromfile(gt_terrainmarks_path, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
         else:
             gt_seg = None
-        cur_main_terrain_output = self.ns_infer_terrainmarksseg.main_terrain(img_bgr, self.domain["terrainsmarks"], gt_seg=gt_seg)
-        pred_seg, new_terrainmarks = cur_main_terrain_output
+        cur_main_terrainmarks_output = self.ns_infer_terrainmarksseg.main_terrain(img_bgr, self.domain["terrainmarks"], gt_seg=gt_seg)
+        pred_seg, new_terrainmarks = cur_main_terrainmarks_output
         new_terrainmarks_array = np.array(new_terrainmarks)
         result = new_terrainmarks_array[pred_seg]
         map_to_ldips = np.vectorize(lambda x: self.predefined_terrainmarks.get(x, 1111))
@@ -236,8 +238,8 @@ class FasterImageInference:
             per_class_mask = None
         cur_distance_to_obj_output = self.ns_infer_objdet.main_distance_to(img_bgr, pc_xyz, obj_name,
                                                                            box_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0],
-                                                                           text_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[1],
-                                                                           nms_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[2],
+                                                                           text_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0],
+                                                                           nms_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0],
                                                                            per_class_mask=per_class_mask)
         dist_arr, found = cur_distance_to_obj_output
         ret_out = dist_arr.reshape((img_bgr.shape[0], img_bgr.shape[1])).astype(np.float32)
@@ -289,8 +291,8 @@ class FasterImageInference:
             return np.fromfile(fullpath, dtype=np.float32).reshape((img_bgr.shape[0], img_bgr.shape[1]))
         cur_frontal_distance_to_obj_output = self.ns_infer_objdet.main_frontal_distance(img_bgr, pc_xyz, obj_name,
                                                                                         box_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0],
-                                                                                        text_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[1],
-                                                                                        nms_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[2])
+                                                                                        text_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0],
+                                                                                        nms_threshold=self.OBJECT_THRESHOLDS.get(obj_name, [None])[0])
         dist_arr, found = cur_frontal_distance_to_obj_output
         ret_out = dist_arr.reshape((img_bgr.shape[0], img_bgr.shape[1])).astype(np.float32)
         flat_ret_out = ret_out.reshape(-1).astype(np.float32)
