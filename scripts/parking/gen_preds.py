@@ -22,7 +22,7 @@ def bind_method(instance, name):
     return method
 
 
-def reduce_array(arr, grid_size=20):
+def downsample(arr, grid_size=20):
     # Dimensions of the new grid
     new_height, new_width = grid_size, grid_size
     # Size of blocks
@@ -40,7 +40,7 @@ def reduce_array(arr, grid_size=20):
     return reduced
 
 
-def project_to_original(reduced_array, original_height=540, original_width=960):
+def upsample(reduced_array, original_height=540, original_width=960):
     block_height, block_width = original_height // reduced_array.shape[0], original_width // reduced_array.shape[1]
     projected = np.zeros((original_height, original_width), dtype=int)
     for i in range(reduced_array.shape[0]):
@@ -81,7 +81,8 @@ def gpt4v_save_pred(sdi, root_dir, method_num, pre_prompt):
             print("------------------------------------------------------------- RESPONSE")
             print(text)
             print("-------------------------------------------------------------")
-        arr = project_to_original(arr)
+        arr = upsample(arr)
+        assert arr == upsample(downsample(arr))
         arr[arr == 0] = 2
         flat_arr = arr.reshape(-1).astype(np.uint8)
         flat_arr.tofile(os.path.join(pred_root_dir, f"{noext_filename}.bin"))

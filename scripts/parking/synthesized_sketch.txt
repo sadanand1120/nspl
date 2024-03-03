@@ -1,12 +1,12 @@
 def is_parking(pixel_loc):
     if terrain(pixel_loc) == 1:
         if terrainmark(pixel_loc) == 0:
-            if available_parking_lines(pixel_loc) == 1 and distance_to_car(pixel_loc) > 1.0 and distance_to_person(pixel_loc) > 2.0 and within_parking_lines(pixel_loc) == 1:
+            if available_parking_lines(pixel_loc) == 1 and distance_to_car(pixel_loc) > 1.5 and distance_to_person(pixel_loc) > 1.0 and within_parking_lines(pixel_loc) == 1:
                 return True
             elif available_parking_lines(pixel_loc) == 0 and distance_to_car(pixel_loc) > 0.6 and distance_to_car(pixel_loc) < 10.0 and distance_to_person(pixel_loc) > 2.0 and distance_to_sidewalk(pixel_loc) > 0.0 and distance_to_sidewalk(pixel_loc) < 1.75:
                 return True
         elif terrainmark(pixel_loc) == 2:
-            if available_parking_lines(pixel_loc) == 1 and distance_to_car(pixel_loc) > 0.6 and distance_to_person(pixel_loc) > 2.0 and within_parking_lines(pixel_loc) == 1:
+            if available_parking_lines(pixel_loc) == 1 and distance_to_car(pixel_loc) > 1.4 and distance_to_person(pixel_loc) > 1.0 and within_parking_lines(pixel_loc) == 1:
                 return True
             elif available_parking_lines(pixel_loc) == 0 and distance_to_car(pixel_loc) > 0.6 and distance_to_car(pixel_loc) < 10.0 and distance_to_person(pixel_loc) > 2.0 and distance_to_sidewalk(pixel_loc) > 0.0 and distance_to_sidewalk(pixel_loc) < 1.75:
                 return True
