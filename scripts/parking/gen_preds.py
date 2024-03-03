@@ -35,8 +35,8 @@ def downsample(arr, grid_size=20):
             block = arr[i * block_height:(i + 1) * block_height, j * block_width:(j + 1) * block_width]
             # Counting 1s and 0s
             ones = np.sum(block)
-            # Determining the value for reduced array cell
-            reduced[i, j] = 1 if ones > (block_height * block_width) / 100 else 0
+            # Determining the value for reduced array cell, 60% threshold
+            reduced[i, j] = 1 if ones > (block_height * block_width) * 0.6 else 0
     return reduced
 
 
@@ -82,7 +82,6 @@ def gpt4v_save_pred(sdi, root_dir, method_num, pre_prompt):
             print(text)
             print("-------------------------------------------------------------")
         arr = upsample(arr)
-        assert arr == upsample(downsample(arr))
         arr[arr == 0] = 2
         flat_arr = arr.reshape(-1).astype(np.uint8)
         flat_arr.tofile(os.path.join(pred_root_dir, f"{noext_filename}.bin"))
@@ -184,9 +183,9 @@ def visprog_save_pred(hfdi, root_dir, method_num, prompted=False):
     s.prepare_dataset()
     eval_ds = s.ds
     if prompted:
-        prompt = "parking location = sidewalk or concrete, and far away from objects. Replace parking location with snow."
+        prompt = "parking location = as defined by white lines on road OR next to car near sidewalk. Replace parking location with snow."
     else:
-        prompt = "Replace a good parking location for a taxi to pull over to with snow."
+        prompt = "Replace a good parking location for a taxi with snow."
     for i in range(len(eval_ds)):
         print(green(f"Processing {i+1}/{len(eval_ds)}", "bold"))
         pil_img = eval_ds[i]['pixel_values']
