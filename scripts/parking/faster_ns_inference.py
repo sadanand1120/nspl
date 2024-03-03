@@ -229,11 +229,11 @@ class FasterImageInference:
         if obj_name in self.domain["terrains"]:
             ego_terrain_idx = self.predefined_terrains[obj_name]
             terrain_out = self.terrain(img_bgr, pc_xyz)
-            per_class_mask = (terrain_out == ego_terrain_idx).astype(np.uint8).squeeze()
+            per_class_mask = (terrain_out == ego_terrain_idx).squeeze()
         elif obj_name in self.domain["terrainmarks"]:
             ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
             terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
-            per_class_mask = (terrainmarks_out == ego_terrainmark_idx).astype(np.uint8).squeeze()
+            per_class_mask = (terrainmarks_out == ego_terrainmark_idx).squeeze()
         else:
             per_class_mask = None
         cur_distance_to_obj_output = self.ns_infer_objdet.main_distance_to(img_bgr, pc_xyz, obj_name,
@@ -280,7 +280,7 @@ class FasterImageInference:
         # dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
         # dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
 
-        bool_arr = 0.0 < dist_to_obj < 2.0
+        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 2.0)
         flat_ret_out = bool_arr.reshape(-1).astype(np.uint8)
         flat_ret_out.tofile(fullpath)
         return bool_arr
