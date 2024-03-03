@@ -4,8 +4,8 @@ from datasets import load_dataset
 import numpy as np
 
 if __name__ == "__main__":
-    hfdi = "sam1120/parking-terrain_marks"
-    rootdir = "/home/dynamo/AMRL_Research/repos/nspl/evals_data_parking/utcustom/gt_terrainmarks"
+    hfdi = "sam1120/parking-terrain"
+    rootdir = f"{nspl_root_dir}/evals_data_parking/utcustom/gt_terrains"
     os.makedirs(rootdir, exist_ok=True)
     ds_dict = load_dataset(hfdi)
     ds = ds_dict['train']

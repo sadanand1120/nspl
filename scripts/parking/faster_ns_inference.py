@@ -265,11 +265,11 @@ class FasterImageInference:
 
         dist_to_obj = self.distance_to_obj(img_bgr, pc_xyz, obj_name)
         dist_to_sidewalk = self.distance_to_obj(img_bgr, pc_xyz, "sidewalk")
-        # dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
-        # dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
-        gamma = np.mean(dist_to_sidewalk[per_class_mask_obj])
+        dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
+        dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
+        gamma = np.mean(dist_min_sidewalk_else[per_class_mask_obj])
 
-        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 1.1) & (dist_to_sidewalk < 1.4 * gamma)
+        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 1.4) & (dist_min_sidewalk_else < 1.4 * gamma)
         return bool_arr
 
     def frontal_distance_to_obj(self, img_bgr, pc_xyz, obj_name):
