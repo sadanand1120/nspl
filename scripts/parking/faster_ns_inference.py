@@ -16,7 +16,7 @@ class FasterImageInference:
         "barricade": (0.5, 0.5, 0.3),
         "board": (0.3, 0.3, 0.5),
         "bush": (0.4, 0.4, 0.4),
-        "car": (0.3, 0.3, 0.3),
+        "car": (0.2, 0.2, 0.3),
         "entrance": (0.3, 0.3, 0.2),
         "person": (0.25, 0.25, 0.6),
         "pole": (0.4, 0.4, 0.5),
@@ -248,23 +248,14 @@ class FasterImageInference:
         return ret_out
 
     def available_obj(self, img_bgr, pc_xyz, obj_name):
-        fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_available_{obj_name}.bin")
-        if os.path.exists(fullpath):
-            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))[0][0]
         ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
         terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
         per_class_mask = (terrainmarks_out == ego_terrainmark_idx).astype(np.uint8).squeeze()
         tot = np.sum(per_class_mask)
         b = tot > 100  # more than 100 pixels
-        bool_arr = np.ones((img_bgr.shape[0], img_bgr.shape[1]), dtype=np.uint8) * b
-        flat_ret_out = bool_arr.reshape(-1).astype(np.uint8)
-        flat_ret_out.tofile(fullpath)
         return b
 
     def within_obj(self, img_bgr, pc_xyz, obj_name):
-        fullpath = os.path.join(self.fi_data_dir, f"{self.noext_name}_within_{obj_name}.bin")
-        if os.path.exists(fullpath):
-            return np.fromfile(fullpath, dtype=np.uint8).reshape((img_bgr.shape[0], img_bgr.shape[1]))
         if not self.available_obj(img_bgr, pc_xyz, obj_name):
             return np.zeros((img_bgr.shape[0], img_bgr.shape[1]), dtype=np.uint8)
 
@@ -280,9 +271,7 @@ class FasterImageInference:
         # dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
         # dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
 
-        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 2.0)
-        flat_ret_out = bool_arr.reshape(-1).astype(np.uint8)
-        flat_ret_out.tofile(fullpath)
+        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 1.2)
         return bool_arr
 
     def frontal_distance_to_obj(self, img_bgr, pc_xyz, obj_name):
