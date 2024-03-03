@@ -13,6 +13,7 @@ from llm._vlm import get_vlm_response
 from segments import SegmentsClient
 import re
 from simple_colors import red, green
+from utilities.std_utils import smoothing_filter
 
 
 def bind_method(instance, name):
@@ -119,6 +120,7 @@ def ns_save_pred(hfdi, root_dir, method_num, ldips_infer_ns_obj: FasterImageInfe
             print("\033[F\033[K", end="")  # Move up and clear the line
 
         is_safe_mask[is_safe_mask == 0] = 2
+        is_safe_mask = smoothing_filter(is_safe_mask)  # remove noise
         flat_is_safe_mask = is_safe_mask.reshape(-1).astype(np.uint8)
         flat_is_safe_mask.tofile(os.path.join(pred_root_dir, f"{noext_name}.bin"))
 
