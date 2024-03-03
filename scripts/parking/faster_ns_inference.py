@@ -259,19 +259,17 @@ class FasterImageInference:
         if not self.available_obj(img_bgr, pc_xyz, obj_name):
             return np.zeros((img_bgr.shape[0], img_bgr.shape[1]), dtype=np.uint8)
 
+        ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
+        terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
+        per_class_mask_obj = (terrainmarks_out == ego_terrainmark_idx).squeeze()
+
         dist_to_obj = self.distance_to_obj(img_bgr, pc_xyz, obj_name)
-
-        # ego_terrainmark_idx = self.predefined_terrainmarks[obj_name]
-        # terrainmarks_out = self.terrainmarks(img_bgr, pc_xyz)
-        # per_class_mask_obj = (terrainmarks_out == ego_terrainmark_idx).astype(np.uint8).squeeze()
-
-        # # distance to obj -> obj_name, sidewalk, ELSE
-        # dist_to_obj = self.distance_to_obj(img_bgr, pc_xyz, obj_name)
-        # dist_to_sidewalk = self.distance_to_obj(img_bgr, pc_xyz, "sidewalk")
+        dist_to_sidewalk = self.distance_to_obj(img_bgr, pc_xyz, "sidewalk")
         # dist_to_else = self.distance_to_obj(img_bgr, pc_xyz, "ELSE")
         # dist_min_sidewalk_else = np.minimum(dist_to_sidewalk, dist_to_else)
+        gamma = np.mean(dist_to_sidewalk[per_class_mask_obj])
 
-        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 1.2)
+        bool_arr = (0.0 < dist_to_obj) & (dist_to_obj < 1.1) & (dist_to_sidewalk < 1.4 * gamma)
         return bool_arr
 
     def frontal_distance_to_obj(self, img_bgr, pc_xyz, obj_name):
