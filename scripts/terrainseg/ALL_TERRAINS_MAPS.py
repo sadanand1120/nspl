@@ -26,22 +26,22 @@ DATASETLABELS_TO_NSLABELS = {
 TERRAINMARKS_NSLABELS_TWOWAY_NSINT = {
     0: "parking_lines",
     1: "X",
-    2: "ELSE",
+    2: "REST",
     "parking_lines": 0,
     "X": 1,
-    "ELSE": 2,
+    "REST": 2,
 }
 
 TERRAINMARKS_DATASETINTstr_TO_DATASETLABELS = {
     "0": "unlabeled",
     "1": "parking_lines",
     "2": "X",
-    "3": "ELSE"
+    "3": "REST"
 }
 
 TERRAINMARKS_DATASETLABELS_TO_NSLABELS = {
-    "unlabeled": "ELSE",
+    "unlabeled": "REST",
     "parking_lines": "parking_lines",
     "X": "X",
-    "ELSE": "ELSE",
+    "REST": "REST",
 }
