@@ -33,7 +33,7 @@ def downsample(arr, grid_size=20, threshold=0.80):
     return reduced
 
 
-def custom_compute_generalized_mean_iou(gA, gB):
+def custom_compute_generalized_mean_iou(gA, gB, ignore_index=None):
     num_classes = max(np.max(gA), np.max(gB)) + 1  # Determine the number of classes
     iou_per_class = {f'class_{i}_iou': [] for i in range(num_classes)}  # Initialize IoU lists for each class
 
@@ -52,6 +52,8 @@ def custom_compute_generalized_mean_iou(gA, gB):
     # Calculate mean IoU for each class and overall mean IoU
     mean_iou_values = []
     for class_id, ious in iou_per_class.items():
+        if ignore_index is not None and class_id == ignore_index:
+            continue
         if ious:  # Check if the list is not empty
             mean_iou = np.mean(ious)
             iou_per_class[class_id] = mean_iou
@@ -94,7 +96,7 @@ def iou_viz_individual(root_dir, method_num, H=540, W=960):
         print(f"Processing idx {i}/{len(all_gt_bins)}")
         gt_bin = all_gt_bins[i].reshape((1, H, W))
         pred_bin = all_pred_bins[i].reshape((1, H, W))
-        custom_iou_dict = custom_compute_generalized_mean_iou(gt_bin, pred_bin)
+        custom_iou_dict = custom_compute_generalized_mean_iou(gt_bin, pred_bin, ignore_index="class_0_iou")
         iou_dict = {}
         iou_dict["mIOU"] = custom_iou_dict["mean_iou"]
         iou_dict["IOU_parking"] = custom_iou_dict["class_1_iou"]
@@ -155,7 +157,7 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, H, W))
     full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, H, W))
     print("Evaluating...")
-    custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin)
+    custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin, ignore_index="class_0_iou")
     iou_dict = {}
     iou_dict["mIOU"] = round(custom_iou_dict["mean_iou"] * 100, 2)
     iou_dict["IOU_parking"] = round(custom_iou_dict["class_1_iou"] * 100, 2)
@@ -199,7 +201,7 @@ def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=20, W=20, do_
     full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, H, W))
     full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, H, W))
     print("Evaluating...")
-    custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin)
+    custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin, ignore_index="class_0_iou")
     iou_dict = {}
     iou_dict["mIOU"] = round(custom_iou_dict["mean_iou"] * 100, 2)
     iou_dict["IOU_parking"] = round(custom_iou_dict["class_1_iou"] * 100, 2)
