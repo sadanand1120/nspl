@@ -165,7 +165,7 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     return iou_dict
 
 
-def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=20, W=20, do_exclude=True, downsample_threshold=0.8):
+def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=540, W=960, grid_size=20, do_exclude=True, downsample_threshold=0.8):
     """
     Computes the IoU between the ground truth and the predictions using the bins (downsampled)
     """
@@ -191,15 +191,15 @@ def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=20, W=20, do_
         for i, gt_bin_path in enumerate(all_gt_bins_paths):
             if i in EXCLUDE_IDX_LIST:
                 continue
-            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold).reshape((H, W))
+            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold.reshape((H, W)), grid_size=grid_size)
             all_gt_bins.append(pc_np)
         for i, pred_bin_path in enumerate(all_pred_bins_paths):
             if i in EXCLUDE_IDX_LIST:
                 continue
-            pc_np = downsample(np.fromfile(pred_bin_path, dtype=np.uint8), threshold=downsample_threshold).reshape((H, W))
+            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold.reshape((H, W)), grid_size=grid_size)
             all_pred_bins.append(pc_np)
-    full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, H, W))
-    full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, H, W))
+    full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, grid_size, grid_size))
+    full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, grid_size, grid_size))
     print("Evaluating...")
     custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin, ignore_index="class_0_iou")
     iou_dict = {}
@@ -225,7 +225,7 @@ if __name__ == "__main__":
     if args.downsample_threshold is None:
         iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
     else:
-        iou_dict = compute_iou_downsampled(root_dir, root_dirnames, args.method_num, H=20, W=20, do_exclude=args.do_exclude, downsample_threshold=args.downsample_threshold)
+        iou_dict = compute_iou_downsampled(root_dir, root_dirnames, args.method_num, H=_H, W=_W, grid_size=20, do_exclude=args.do_exclude, downsample_threshold=args.downsample_threshold)
     print(green(f"Evaluation results for method {args.method_num}:", "bold"))
     pprint(iou_dict)
 
