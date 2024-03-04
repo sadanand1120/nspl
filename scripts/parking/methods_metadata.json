@@ -20,7 +20,7 @@
     },
     "7": {
         "name": "nn-depth-segformer-b5",
-        "model-hfmi": "sam1120/parking-utcustom-train-SF-RGBD-b5_1",
+        "model-hfmi": "sam1120/BACKUP_parking-utcustom-train-SF-RGBD-b5_6",
         "type": "nn"
     },
     "8": {
