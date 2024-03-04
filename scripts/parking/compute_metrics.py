@@ -210,14 +210,15 @@ def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=20, W=20, do_
 if __name__ == "__main__":
     _H = 540
     _W = 960
-    root_dir = os.path.join(nspl_root_dir, "evals_data_parking/utcustom")
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_dirname", type=str, default="train")  # either eval/train/test, could be many separated by commas
+    parser.add_argument("--concept", type=str, default="parking")
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument('-d', "--downsample_threshold", type=float, default=None)
     parser.add_argument("--do_exclude", action="store_true")
     args = parser.parse_args()
+    root_dir = os.path.join(nspl_root_dir, f"evals_data_{args.concept}/utcustom")
     root_dirnames = args.root_dirname.split(",")
     if args.downsample_threshold is None:
         iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
