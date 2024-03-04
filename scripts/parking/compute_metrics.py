@@ -191,12 +191,14 @@ def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=540, W=960, g
         for i, gt_bin_path in enumerate(all_gt_bins_paths):
             if i in EXCLUDE_IDX_LIST:
                 continue
-            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold.reshape((H, W)), grid_size=grid_size)
+            pc_np = np.fromfile(gt_bin_path, dtype=np.uint8).reshape((H, W))
+            pc_np = downsample(pc_np, threshold=downsample_threshold, grid_size=grid_size)
             all_gt_bins.append(pc_np)
         for i, pred_bin_path in enumerate(all_pred_bins_paths):
             if i in EXCLUDE_IDX_LIST:
                 continue
-            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold.reshape((H, W)), grid_size=grid_size)
+            pc_np = np.fromfile(pred_bin_path, dtype=np.uint8).reshape((H, W))
+            pc_np = downsample(pc_np, threshold=downsample_threshold, grid_size=grid_size)
             all_pred_bins.append(pc_np)
     full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, grid_size, grid_size))
     full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, grid_size, grid_size))
