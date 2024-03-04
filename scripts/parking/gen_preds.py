@@ -23,24 +23,6 @@ def bind_method(instance, name):
     return method
 
 
-def downsample(arr, grid_size=20):
-    # Dimensions of the new grid
-    new_height, new_width = grid_size, grid_size
-    # Size of blocks
-    block_height, block_width = arr.shape[0] // new_height, arr.shape[1] // new_width
-    # Reduced array
-    reduced = np.zeros((new_height, new_width), dtype=int)
-    for i in range(new_height):
-        for j in range(new_width):
-            # Extracting each block
-            block = arr[i * block_height:(i + 1) * block_height, j * block_width:(j + 1) * block_width]
-            # Counting 1s and 0s
-            ones = np.sum(block)
-            # Determining the value for reduced array cell, 60% threshold
-            reduced[i, j] = 1 if ones > (block_height * block_width) * 0.6 else 0
-    return reduced
-
-
 def upsample(reduced_array, original_height=540, original_width=960):
     block_height, block_width = original_height // reduced_array.shape[0], original_width // reduced_array.shape[1]
     projected = np.zeros((original_height, original_width), dtype=int)

@@ -15,6 +15,24 @@ EXCLUDE_IDX = {
 }
 
 
+def downsample(arr, grid_size=20, threshold=0.80):
+    # Dimensions of the new grid
+    new_height, new_width = grid_size, grid_size
+    # Size of blocks
+    block_height, block_width = arr.shape[0] // new_height, arr.shape[1] // new_width
+    # Reduced array
+    reduced = np.zeros((new_height, new_width), dtype=int)
+    for i in range(new_height):
+        for j in range(new_width):
+            # Extracting each block
+            block = arr[i * block_height:(i + 1) * block_height, j * block_width:(j + 1) * block_width]
+            # Counting 1s and 0s
+            ones = np.sum(block)
+            # Determining the value for reduced array cell, 80% threshold
+            reduced[i, j] = 1 if ones > (block_height * block_width) * threshold else 0
+    return reduced
+
+
 def custom_compute_generalized_mean_iou(gA, gB):
     num_classes = max(np.max(gA), np.max(gB)) + 1  # Determine the number of classes
     iou_per_class = {f'class_{i}_iou': [] for i in range(num_classes)}  # Initialize IoU lists for each class
@@ -145,6 +163,50 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     return iou_dict
 
 
+def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=20, W=20, do_exclude=True, downsample_threshold=0.8):
+    """
+    Computes the IoU between the ground truth and the predictions using the bins (downsampled)
+    """
+    if not isinstance(root_dirnames, list):
+        root_dirnames = [root_dirnames]
+    id2label = {
+        0: "unlabeled",
+        1: "parking",
+        2: "unparking",
+    }
+    all_gt_bins = []
+    all_pred_bins = []
+    for root_dirname in root_dirnames:
+        root_dir2 = os.path.join(root_dir, root_dirname)
+        if do_exclude:
+            EXCLUDE_IDX_LIST = EXCLUDE_IDX[root_dirname]
+        else:
+            EXCLUDE_IDX_LIST = []
+        gt_root_dir = os.path.join(root_dir2, "gt_preds")
+        pred_root_dir = os.path.join(root_dir2, f"methods_preds/{method_num}")
+        all_gt_bins_paths = [os.path.join(gt_root_dir, f) for f in sorted(os.listdir(gt_root_dir)) if f.endswith(".bin")]
+        all_pred_bins_paths = [os.path.join(pred_root_dir, f) for f in sorted(os.listdir(pred_root_dir)) if f.endswith(".bin")]
+        for i, gt_bin_path in enumerate(all_gt_bins_paths):
+            if i in EXCLUDE_IDX_LIST:
+                continue
+            pc_np = downsample(np.fromfile(gt_bin_path, dtype=np.uint8), threshold=downsample_threshold).reshape((H, W))
+            all_gt_bins.append(pc_np)
+        for i, pred_bin_path in enumerate(all_pred_bins_paths):
+            if i in EXCLUDE_IDX_LIST:
+                continue
+            pc_np = downsample(np.fromfile(pred_bin_path, dtype=np.uint8), threshold=downsample_threshold).reshape((H, W))
+            all_pred_bins.append(pc_np)
+    full_gt_bin = np.concatenate(all_gt_bins, axis=0).reshape((-1, H, W))
+    full_pred_bin = np.concatenate(all_pred_bins, axis=0).reshape((-1, H, W))
+    print("Evaluating...")
+    custom_iou_dict = custom_compute_generalized_mean_iou(full_gt_bin, full_pred_bin)
+    iou_dict = {}
+    iou_dict["mIOU"] = round(custom_iou_dict["mean_iou"] * 100, 2)
+    iou_dict["IOU_parking"] = round(custom_iou_dict["class_1_iou"] * 100, 2)
+    iou_dict["IOU_unparking"] = round(custom_iou_dict["class_2_iou"] * 100, 2)
+    return iou_dict
+
+
 if __name__ == "__main__":
     _H = 540
     _W = 960
@@ -153,10 +215,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--root_dirname", type=str, default="train")  # either eval/train/test, could be many separated by commas
     parser.add_argument("--method_num", type=int, default=1)
+    parser.add_argument('-d', "--downsample_threshold", type=float, default=None)
     parser.add_argument("--do_exclude", action="store_true")
     args = parser.parse_args()
     root_dirnames = args.root_dirname.split(",")
-    iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
+    if args.downsample_threshold is None:
+        iou_dict = compute_iou(root_dir, root_dirnames, args.method_num, H=_H, W=_W, do_exclude=args.do_exclude)
+    else:
+        iou_dict = compute_iou_downsampled(root_dir, root_dirnames, args.method_num, H=20, W=20, do_exclude=args.do_exclude, downsample_threshold=args.downsample_threshold)
     print(green(f"Evaluation results for method {args.method_num}:", "bold"))
     pprint(iou_dict)
 
