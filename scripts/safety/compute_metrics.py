@@ -151,9 +151,9 @@ def compute_iou_downsampled(root_dir, root_dirnames, method_num, H=540, W=960, g
     metrics.update({f"accuracy_{id2label[i]}": v for i, v in enumerate(per_category_accuracy)})
     metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
     iou_dict = {}
-    # iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
     iou_dict["IOU_safe"] = round(metrics["iou_safe"] * 100, 2)
     iou_dict["IOU_unsafe"] = round(metrics["iou_unsafe"] * 100, 2)
+    iou_dict["mIOU"] = round((metrics["iou_safe"] + metrics["iou_unsafe"]) * 100 / 2, 2)
     return iou_dict
 
 
@@ -206,9 +206,9 @@ def compute_iou(root_dir, root_dirnames, method_num, H=540, W=960, do_exclude=Tr
     metrics.update({f"accuracy_{id2label[i]}": v for i, v in enumerate(per_category_accuracy)})
     metrics.update({f"iou_{id2label[i]}": v for i, v in enumerate(per_category_iou)})
     iou_dict = {}
-    # iou_dict["mIOU"] = round(metrics["mean_iou"] * 100, 2)
     iou_dict["IOU_safe"] = round(metrics["iou_safe"] * 100, 2)
     iou_dict["IOU_unsafe"] = round(metrics["iou_unsafe"] * 100, 2)
+    iou_dict["mIOU"] = round((metrics["iou_safe"] + metrics["iou_unsafe"]) * 100 / 2, 2)
     return iou_dict
 
 
