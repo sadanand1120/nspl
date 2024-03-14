@@ -139,7 +139,7 @@ DATA_DISTILLED = {
 }
 
 
-def hack_seqn_filled_sketches(example_nums_feedlist, data_distilled):
+def hack_seqn_filled_sketches(example_nums_feedlist, data_distilled, pid=0):
     """
     Given the example num seqn feed order, returns the dict of seqn filled sketches
     """
@@ -152,7 +152,7 @@ def hack_seqn_filled_sketches(example_nums_feedlist, data_distilled):
         nums_list = example_nums_feedlist[:i + 1]
         examples_data = read_data(nums_list)
         lsps_sketch = LDIPSdatagenSingleEx.convert_LFPS_to_LSPS(lfps_sketch)
-        params = LDIPS_synthesize(examples_data, lsps_sketch)
+        params = LDIPS_synthesize(examples_data, lsps_sketch, pid=pid)
         filled_lfps_sketch = LDIPSdatagenSingleEx.fillparams_in_LFPS(lfps_sketch, params)
         seqn_filled_lfps_sketches[str(i + 1)] = filled_lfps_sketch
     return seqn_filled_lfps_sketches

@@ -294,7 +294,7 @@ def extract_values(output):
     return params
 
 
-def LDIPS_synthesize(examples_data, params_sketch_lsps):
+def LDIPS_synthesize(examples_data, params_sketch_lsps, pid=0):
     """
     example_data: list of tuples (label, ldips_features)
     params_sketch_lsps: string of sketch with params (pX000, pX001, etc)
@@ -307,7 +307,7 @@ def LDIPS_synthesize(examples_data, params_sketch_lsps):
     new_sketch_ldips_pos, new_sketch_ldips_neg, new_sketch = parse_sketch(params_sketch_lsps)
 
     # Write to file
-    TEMP_ROOTDIR = os.path.join(nspl_root_dir, "scripts/synthesis/_ldips_temp")
+    TEMP_ROOTDIR = os.path.join(nspl_root_dir, f"scripts/synthesis/_ldips_temp_{pid}")
     shutil.rmtree(TEMP_ROOTDIR, ignore_errors=True)
     os.makedirs(os.path.join(TEMP_ROOTDIR, "sketch_dir"), exist_ok=True)
     os.makedirs(os.path.join(TEMP_ROOTDIR, "example_dir"), exist_ok=True)
