@@ -229,8 +229,9 @@ if __name__ == "__main__":
     methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/safety/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_di", type=str, default="sam1120/safety-utcustom-EVAL")
-    parser.add_argument("--root_dirname", type=str, default="eval")  # wrt to root_dir defined above
+    NSCL_MODE = "test"
+    parser.add_argument("--eval_di", type=str, default="sam1120/safety-utcustom-TEST")
+    parser.add_argument("--root_dirname", type=str, default="test")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument("--ns_sketch_num", type=int, default=29)
     parser.add_argument("--start", type=int, default=0)
@@ -260,7 +261,7 @@ if __name__ == "__main__":
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
             filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/seqn_filled_lfps_sketches.json"))[str(args.ns_sketch_num)]
-            fi = FasterImageInference(DOMAIN)
+            fi = FasterImageInference(DOMAIN, NSCL_MODE)
         # ablations
         elif methods_metadata[str(args.method_num)]["name"] == "ns-direct":
             filled_lfps_sketch = json_reader(os.path.join(nspl_root_dir, "scripts/llm/ablation_direct/seqn_filled_lfps_sketches.json"))["29"]

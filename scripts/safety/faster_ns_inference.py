@@ -7,6 +7,7 @@ from llm.preprompts.ALL_TERRAINS_MAPS import NSLABELS_TWOWAY_NSINT, DATASETINTst
 from terrainseg.inference import TerrainSegFormer
 from utilities.std_utils import json_reader
 from ldips_inference import NSInferObjDet, NSInferTerrainSeg
+from copy import deepcopy
 
 
 class FasterImageInference:
@@ -25,7 +26,7 @@ class FasterImageInference:
         "wall": (0.5, 0.5, 0.4)
     }
 
-    def __init__(self, domain):
+    def __init__(self, domain, NSCL_MODE):
         print("Initializing FasterImageInference...")
         self.ns_infer_objdet = NSInferObjDet()
         self.ns_infer_terrainseg = NSInferTerrainSeg()
@@ -34,6 +35,8 @@ class FasterImageInference:
         self.predefined_terrains["dunno"] = 1111
         self.predefined_terrains[1111] = "dunno"
         self.fi_data_dir = None
+        self.nscl_dir = None
+        self.NSCL_MODE = NSCL_MODE
         self.cur_noext_name = None
         self.cur_img_bgr = None
         self.cur_pc_xyz = None
@@ -45,6 +48,7 @@ class FasterImageInference:
 
     def set_state(self, fi_data_dir, noext_name, img_bgr, pc_xyz):
         self.fi_data_dir = fi_data_dir
+        self.nscl_dir = "/robodata/smodak/corl_rebuttal/dino_traindata/nscl"
         self.noext_name = noext_name
         self.cur_img_bgr = img_bgr
         self.cur_pc_xyz = pc_xyz
@@ -73,6 +77,20 @@ class FasterImageInference:
         """
         if self.cur_main_terrain_output is None:
             self.cur_main_terrain_output = self.terrain(self.cur_img_bgr, self.cur_pc_xyz)
+        nscl_terrain_dir = os.path.join(self.nscl_dir, "terrain", self.NSCL_MODE)
+        nscl_img_dir = os.path.join(nscl_terrain_dir, "images")
+        os.makedirs(nscl_img_dir, exist_ok=True)
+        nscl_gt_preds_dir = os.path.join(nscl_terrain_dir, "gt_preds")
+        os.makedirs(nscl_gt_preds_dir, exist_ok=True)
+        nscl_img_path = os.path.join(nscl_img_dir, f"{self.noext_name}.png")
+        nscl_gt_pred_path = os.path.join(nscl_gt_preds_dir, f"{self.noext_name}.bin")
+        if not os.path.exists(nscl_gt_pred_path):
+            nscl_out = self.cur_main_terrain_output.astype(np.uint8)
+            nscl_gt_out = ((nscl_out == 0) | (nscl_out == 3)).astype(np.uint8)
+            nscl_gt_out[nscl_gt_out == 0] = 2
+            nscl_flat_out = nscl_gt_out.reshape(-1).astype(np.uint8)
+            nscl_flat_out.tofile(nscl_gt_pred_path)
+            cv2.imwrite(nscl_img_path, self.cur_img_bgr)
         return int(self.cur_main_terrain_output[pixel_loc[1], pixel_loc[0]])
 
     def _in_the_way(self, pixel_loc):
@@ -81,6 +99,19 @@ class FasterImageInference:
         """
         if self.cur_main_in_the_way_output is None:
             self.cur_main_in_the_way_output = self.in_the_way(self.cur_img_bgr, self.cur_pc_xyz)
+        nscl_in_the_way_dir = os.path.join(self.nscl_dir, "in_the_way", self.NSCL_MODE)
+        nscl_img_dir = os.path.join(nscl_in_the_way_dir, "images")
+        os.makedirs(nscl_img_dir, exist_ok=True)
+        nscl_gt_preds_dir = os.path.join(nscl_in_the_way_dir, "gt_preds")
+        os.makedirs(nscl_gt_preds_dir, exist_ok=True)
+        nscl_img_path = os.path.join(nscl_img_dir, f"{self.noext_name}.png")
+        nscl_gt_pred_path = os.path.join(nscl_gt_preds_dir, f"{self.noext_name}.bin")
+        if not os.path.exists(nscl_gt_pred_path):
+            nscl_out = self.cur_main_in_the_way_output.astype(np.uint8)
+            nscl_out[nscl_out == 0] = 2
+            nscl_flat_out = nscl_out.reshape(-1).astype(np.uint8)
+            nscl_flat_out.tofile(nscl_gt_pred_path)
+            cv2.imwrite(nscl_img_path, self.cur_img_bgr)
         return bool(self.cur_main_in_the_way_output[pixel_loc[1], pixel_loc[0]])
 
     def _slope(self, pixel_loc):
@@ -99,6 +130,33 @@ class FasterImageInference:
             self.cur_distance_to_output = {}
         if obj_name not in self.cur_distance_to_output.keys():
             self.cur_distance_to_output[obj_name] = self.distance_to_obj(self.cur_img_bgr, self.cur_pc_xyz, obj_name)
+        nscl_distance_to_dir = os.path.join(self.nscl_dir, f"distance_to", self.NSCL_MODE)
+        nscl_img_dir = os.path.join(nscl_distance_to_dir, "images")
+        os.makedirs(nscl_img_dir, exist_ok=True)
+        nscl_gt_preds_dir = os.path.join(nscl_distance_to_dir, "gt_preds")
+        os.makedirs(nscl_gt_preds_dir, exist_ok=True)
+        nscl_img_path = os.path.join(nscl_img_dir, f"{self.noext_name}_{obj_name}.png")
+        nscl_gt_pred_path = os.path.join(nscl_gt_preds_dir, f"{self.noext_name}_{obj_name}.bin")
+        DIST_PARAM_DICT = {
+            "person": 2.152957,
+            "pole": 0.0,
+            "bush": 0.188634,
+            "barricade": 0.0,
+            "tree": 0.0,
+            "board": 1.525404,
+            "car": 3.171441,
+            "wall": 0.40165
+        }
+        if not os.path.exists(nscl_gt_pred_path):
+            nscl_out = self.cur_distance_to_output[obj_name].astype(np.float32)
+            nscl_gt_out = (nscl_out > DIST_PARAM_DICT[obj_name]).astype(np.uint8)
+            nscl_gt_out[nscl_gt_out == 0] = 2
+            nscl_flat_out = nscl_gt_out.reshape(-1).astype(np.uint8)
+            nscl_flat_out.tofile(nscl_gt_pred_path)
+            overlay_img = deepcopy(self.cur_img_bgr)
+            obj_mask = (nscl_out < 0.05).astype(np.uint8)
+            overlayed_img = TerrainSegFormer.get_seg_overlay(overlay_img, obj_mask, alpha=0.24)
+            cv2.imwrite(nscl_img_path, overlayed_img)
         return float(self.cur_distance_to_output[obj_name][pixel_loc[1], pixel_loc[0]])
 
     def _frontal_distance(self, pixel_loc, obj_name):
@@ -109,6 +167,27 @@ class FasterImageInference:
             self.cur_frontal_distance_output = {}
         if obj_name not in self.cur_frontal_distance_output.keys():
             self.cur_frontal_distance_output[obj_name] = self.frontal_distance_to_obj(self.cur_img_bgr, self.cur_pc_xyz, obj_name)
+        nscl_frontal_distance_dir = os.path.join(self.nscl_dir, f"frontal_distance_to", self.NSCL_MODE)
+        nscl_img_dir = os.path.join(nscl_frontal_distance_dir, "images")
+        os.makedirs(nscl_img_dir, exist_ok=True)
+        nscl_gt_preds_dir = os.path.join(nscl_frontal_distance_dir, "gt_preds")
+        os.makedirs(nscl_gt_preds_dir, exist_ok=True)
+        nscl_img_path = os.path.join(nscl_img_dir, f"{self.noext_name}_{obj_name}.png")
+        nscl_gt_pred_path = os.path.join(nscl_gt_preds_dir, f"{self.noext_name}_{obj_name}.bin")
+        FRONTAL_DIST_PARAM_DICT = {
+            "entrance": 25.123699,
+            "staircase": 5.404481
+        }
+        if not os.path.exists(nscl_gt_pred_path):
+            nscl_out = self.cur_frontal_distance_output[obj_name].astype(np.float32)
+            nscl_gt_out = (nscl_out > FRONTAL_DIST_PARAM_DICT[obj_name]).astype(np.uint8)
+            nscl_gt_out[nscl_gt_out == 0] = 2
+            nscl_flat_out = nscl_gt_out.reshape(-1).astype(np.uint8)
+            nscl_flat_out.tofile(nscl_gt_pred_path)
+            overlay_img = deepcopy(self.cur_img_bgr)
+            obj_mask = (nscl_out < 0.05).astype(np.uint8)
+            overlayed_img = TerrainSegFormer.get_seg_overlay(overlay_img, obj_mask, alpha=0.24)
+            cv2.imwrite(nscl_img_path, overlayed_img)
         return float(self.cur_frontal_distance_output[obj_name][pixel_loc[1], pixel_loc[0]])
 
     def terrain(self, img_bgr, pc_xyz):
