@@ -3,6 +3,10 @@
         "name": "ns-hitl",
         "type": "ns"
     },
+    "69": {
+        "name": "nscl",
+        "type": "ns"
+    },
     "4": {
         "name": "nn-segformer-b0",
         "model-hfmi": "sam1120/dropoff-utcustom-train-SF-RGB-b0_3",
