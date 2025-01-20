@@ -10,3 +10,6 @@
 [submodule "third_party/Grounded-Segment-Anything"]
 	path = third_party/Grounded-Segment-Anything
 	url = git@github.com:IDEA-Research/Grounded-Segment-Anything.git
+[submodule "third_party/Depth_Anything"]
+	path = third_party/Depth_Anything
+	url = git@github.com:LiheYoung/Depth-Anything.git

@@ -132,18 +132,18 @@ class GroundedSAM:
                 - class_id: (N, ) class ids, i.e., idx of text_prompts
                 - mask: (N, H, W) boolean segmentation masks, i.e., True at locations belonging to corresponding class
         """
-        # TODO: Hack
-        if "entrance" in text_prompts:
-            text_prompts = text_prompts + ["vertical-wall", "silver-trashcan", "blue-board"]
-            idx = text_prompts.index("entrance")
-            text_prompts[0], text_prompts[idx] = text_prompts[idx], text_prompts[0]  # bring it to 0th index
-        elif "staircase" in text_prompts:
-            text_prompts = text_prompts + ["vertical-wall", "pole", "board"]
-            idx = text_prompts.index("staircase")
-            text_prompts[0], text_prompts[idx] = text_prompts[idx], text_prompts[0]
+        # # TODO: Hack
+        # if "entrance" in text_prompts:
+        #     text_prompts = text_prompts + ["vertical-wall", "silver-trashcan", "blue-board"]
+        #     idx = text_prompts.index("entrance")
+        #     text_prompts[0], text_prompts[idx] = text_prompts[idx], text_prompts[0]  # bring it to 0th index
+        # elif "staircase" in text_prompts:
+        #     text_prompts = text_prompts + ["vertical-wall", "pole", "board"]
+        #     idx = text_prompts.index("staircase")
+        #     text_prompts[0], text_prompts[idx] = text_prompts[idx], text_prompts[0]
         _, detections = self.predict_on_image(img, text_prompts, do_nms=do_nms, box_threshold=box_threshold, text_threshold=text_threshold, nms_threshold=nms_threshold)
-        if "entrance" in text_prompts or "staircase" in text_prompts:
-            detections = GroundedSAM.HACK_filter_keep0(detections)
+        # if "entrance" in text_prompts or "staircase" in text_prompts:
+        #     detections = GroundedSAM.HACK_filter_keep0(detections)
         detections.mask = GroundedSAM.segment(
             sam_predictor=self.sam_predictor,
             image=cv2.cvtColor(img, cv2.COLOR_BGR2RGB),

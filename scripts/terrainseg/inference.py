@@ -14,6 +14,8 @@ from PIL import Image
 from terrainseg.training.train import prepare_dataset
 from safety.dutils import remove_username
 from llm.preprompts.ALL_TERRAINS_MAPS import DATASETINTstr_TO_DATASETLABELS
+torch.set_default_device("cuda")
+torch.backends.cuda.matmul.allow_tf32 = True
 
 
 class TerrainSegFormer:
@@ -80,6 +82,7 @@ class TerrainSegFormer:
         except:
             self.feature_extractor = SegformerFeatureExtractor.from_pretrained(f"{self.hf_username}/{self.hub_model_id}", use_auth_token=self.hf_key)
             self.model = SegformerForSemanticSegmentation.from_pretrained(f"{self.hf_username}/{self.hub_model_id}", use_auth_token=self.hf_key)
+        self.model.eval()
 
     def _internal_predict(self, images, image_size):
         inputs = self.feature_extractor(images=images, return_tensors="pt")
@@ -131,7 +134,7 @@ class TerrainSegFormer:
 
     def predict_new(self, image):
         pred_seg = self._internal_predict(image, image.size[::-1])[0]
-        pred_img = TerrainSegFormer.get_seg_overlay(image, pred_seg)
+        pred_img = TerrainSegFormer.get_seg_overlay(image, pred_seg.cpu())
         return pred_img, pred_seg
 
     def predict_ds_metrics(self, pred_ds):
@@ -206,7 +209,7 @@ class TerrainSegFormer:
 
 
 if __name__ == "__main__":
-    s = TerrainSegFormer(hf_model_ver=None)
+    s = TerrainSegFormer(hf_dataset_name="sam1120/safety-utcustom-terrain-jackal-full-391", hf_model_name="sam1120/safety-utcustom-terrain-b0")
     s.load_model_inference()
     s.prepare_dataset()
 
@@ -227,7 +230,10 @@ if __name__ == "__main__":
     # axs[1].imshow(gt_img)
     # plt.show()
 
-    img = Image.open("/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/examples/syncdata/1/images/000000.png")
+    # img = Image.open("/home/dynamo/AMRL_Research/repos/lifelong_concept_learner/examples/syncdata/1/images/000000.png")
+    img1 = Image.open("/home/dynamo/AMRL_Research/repos/nspl/evals_data_safety/utcustom/train/utcustom/images/000101_morning_mode1_2_11062023_001520.png")
+    img2 = Image.open("/home/dynamo/AMRL_Research/repos/nspl/evals_data_safety/utcustom/train/ns1/images/000684_1674858335.3913727.png")
+    img = img1
     pred_img, pred_seg = s.predict_new(img)
     f, axs = plt.subplots(1, 2)
     f.set_figheight(30)
@@ -238,3 +244,46 @@ if __name__ == "__main__":
     # convert pil image to np array
     axs[1].imshow(np.array(img))
     plt.show()
+
+# if __name__ == "__main__":
+#     import os
+#     import cv2
+#     import rosbag
+#     from PIL import Image
+#     import numpy as np
+#     from cv_bridge import CvBridge, CvBridgeError
+#     from terrainseg.inference import TerrainSegFormer
+#     import matplotlib.pyplot as plt
+#     from safety.realtime.fast_utils import FastModels
+#     from simple_colors import red, green
+#     from tqdm.auto import tqdm
+
+#     bagfile_path = "/home/dynamo/Music/analyze/monitor_2pm.bag"
+#     save_dirpath = "/home/dynamo/Music/analyze"
+#     image_topic = "/camera/rgb/image_raw/compressed"
+
+#     s = TerrainSegFormer(hf_dataset_name="sam1120/safety-utcustom-terrain-jackal-full-391", hf_model_name="sam1120/safety-utcustom-terrain-b0")
+#     s.load_model_inference()
+#     s.prepare_dataset()
+
+#     os.makedirs(save_dirpath, exist_ok=True)
+#     bag = rosbag.Bag(bagfile_path, "r")
+#     bridge = CvBridge()
+
+#     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+#     writer_terrain = None
+
+#     print(green(f"Processing number of messages: {bag.get_message_count(image_topic)}", ["bold"]))
+
+#     for i, (topic, msg, t) in enumerate(tqdm(bag.read_messages(topics=[image_topic]), desc="Processing Bag", total=bag.get_message_count(image_topic))):
+#         cv2_frame_np = bridge.compressed_imgmsg_to_cv2(msg, desired_encoding="passthrough")
+#         pil_img = Image.fromarray(cv2.cvtColor(cv2_frame_np, cv2.COLOR_BGR2RGB))
+#         pred_img_terrain, _ = s.predict_new(pil_img)
+#         pred_img_terrain = cv2.cvtColor(np.asarray(pred_img_terrain), cv2.COLOR_RGB2BGR)
+#         if writer_terrain is None:
+#             h, w = pred_img_terrain.shape[:2]
+#             writer_terrain = cv2.VideoWriter(os.path.join(save_dirpath, "terrain.mp4"), fourcc, 10, (w, h), True)
+#         writer_terrain.write(pred_img_terrain)
+
+#     writer_terrain.release()
+#     bag.close()

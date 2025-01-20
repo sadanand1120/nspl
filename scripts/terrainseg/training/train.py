@@ -24,6 +24,8 @@ from safety.dutils import remove_username
 from PIL import Image
 from copy import deepcopy
 from simple_colors import red
+torch.set_default_device("cuda")
+torch.backends.cuda.matmul.allow_tf32 = True
 
 
 class CustomTrainer(Trainer):
@@ -78,6 +80,14 @@ def prepare_model(pretrained_model_name, id2label, label2id):
         pretrained_model_name,
         id2label=id2label,
         label2id=label2id,
+        do_resize=True,
+        keep_ratio=True,
+        image_scale=(512,512),
+        align=False,
+        size_divisor=False,
+        do_random_crop=False,
+        do_normalize=True,
+        do_pad=False,
     )
     model = SegformerForSemanticSegmentation.from_pretrained(
         pretrained_model_name,
