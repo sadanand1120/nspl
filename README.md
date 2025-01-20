@@ -1,2 +1,1 @@
-# nspl
-Official repository for NSPL: Neuro-Symbolic Preference Learner from human demonstrations
+This is the (internal) development repository for **SYNAPSE: SYmbolic Neural-Aided Preference Synthesis Engine**, accepted at AAAI 2025. The official repository is [here](https://github.com/ut-amrl/synapse).
