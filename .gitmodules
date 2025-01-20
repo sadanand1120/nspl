@@ -6,7 +6,7 @@
 	url = git@github.com:ut-amrl/pips.git
 [submodule "third_party/visprog"]
 	path = third_party/visprog
-	url = git@github.com:allenai/visprog.git
+	url = git@github.com:sadanand1120/visprog.git
 [submodule "third_party/Grounded-Segment-Anything"]
 	path = third_party/Grounded-Segment-Anything
-	url = git@github.com:IDEA-Research/Grounded-Segment-Anything.git
+	url = git@github.com:sadanand1120/Grounded-Segment-Anything.git
