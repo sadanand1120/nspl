@@ -96,8 +96,8 @@ def ns_save_pred(hfdi, root_dir, method_num, ldips_infer_ns_obj: FasterImageInfe
                 print(f"Processing column: {j}/{cv2_img.shape[1]}", end='\r')
                 try:
                     is_safe_mask[k, j] = is_parking((j, k))
-                except:
-                    print(red(f"\nError in processing pixel: {j}/{cv2_img.shape[1]}\n", "bold"))
+                except Exception as e:
+                    print(red(f"\nError {e} in processing pixel: {j}/{cv2_img.shape[1]}\n", "bold"))
                     is_safe_mask[k, j] = False
             print("\033[F\033[K", end="")  # Move up and clear the line
 
@@ -213,9 +213,10 @@ if __name__ == "__main__":
     methods_metadata = json_reader(os.path.join(nspl_root_dir, "scripts/parking/methods_metadata.json"))
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--eval_hfdi", type=str, default="sam1120/parking-utcustom-train")
+    NSCL_MODE = "eval"
+    parser.add_argument("--eval_hfdi", type=str, default=f"sam1120/parking-utcustom-{NSCL_MODE}")
     parser.add_argument("--eval_sdi", type=str, default="smodak/pickup-utcustom-eval", help="Segments.ai dataset identifier, needed only for gpt4v")
-    parser.add_argument("--root_dirname", type=str, default="train")  # wrt to root_dir defined above
+    parser.add_argument("--root_dirname", type=str, default=f"{NSCL_MODE}")  # wrt to root_dir defined above
     parser.add_argument("--method_num", type=int, default=1)
     parser.add_argument("--gtsave", action="store_true")
     parser.add_argument("--hfmi", type=str, default=None, help="Optionally pass a diff hfmi for nn methods")
@@ -250,7 +251,7 @@ if __name__ == "__main__":
         DOMAIN = hitl_llm_state["domain"]
         if methods_metadata[str(args.method_num)]["name"] == "ns-hitl":
             filled_lfps_sketch = reader(os.path.join(nspl_root_dir, "scripts/parking/synthesized_sketch.txt")).strip()
-            fi = FasterImageInference(DOMAIN)
+            fi = FasterImageInference(DOMAIN, NSCL_MODE)
         terrain = fi._terrain
         terrainmark = fi._terrainmarks
         in_the_way = fi._in_the_way
